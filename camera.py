@@ -12,7 +12,14 @@ class Camera:
         target, position, up
     """
 
-    def __init__(self, target: "Ponto", position: "Ponto", up: "Vetor"):
+    def __init__(
+        self,
+        target: "Ponto",
+        position: "Ponto",
+        up: "Vetor",
+        vres: int = 1920,
+        hres: int = 1080,
+    ):
         """Initialize the Camera"""
         self.position = position
         self.target = target
@@ -27,11 +34,7 @@ class Camera:
         self.u: "Vetor" = self.w.__cross__(self.v)
         self.u = self.u.__normalize__()
 
+        self.targer_distance = self.position.__distance__(self.target)
 
-camera_position = Ponto(0, 0, 0)
-camera_target = Ponto(0, 0, 1)
-vetor_up = Vetor(0, 1, 0)
-
-t = Camera(target=camera_target, position=camera_position, up=vetor_up)
-
-print(f"w:{t.w.__dict__} v:{t.v.__dict__} u:{t.u.__dict__}")
+        self.vres = vres
+        self.hres = hres
