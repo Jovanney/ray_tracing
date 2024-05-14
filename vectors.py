@@ -11,6 +11,11 @@ class Ponto:
         self.y = y
         self.z = z
 
+    def __iter__(self):
+        yield self.x
+        yield self.y
+        yield self.z
+
     def __add__(self, p):
         return Ponto(self.x + p.x, self.y + p.y, self.z + p.z)
 
