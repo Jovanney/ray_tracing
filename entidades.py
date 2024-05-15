@@ -37,7 +37,7 @@ class Plane:
         self.normal = normal
         self.color = color
 
-    def __intersec_line__(self, line_point, line_vector):
+    def __intersect_line__(self, line_point, line_vector):
         """Calculate the Intersection Point of a Plane and a Line"""
         d = tuple(p - lp for p, lp in zip(self.point, line_point))
         t = sum(n * dp for n, dp in zip(self.normal, d)) / sum(
