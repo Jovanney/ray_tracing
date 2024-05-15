@@ -17,7 +17,7 @@ def main():
     plano = Plane(
         point=Ponto(0, 0, 0),
         normal=Vetor(0, 0, 1),
-        color=(255, 255, 255),
+        color=(255, 0, 0),
     )
 
     esfera = Esfera(

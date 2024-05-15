@@ -6,6 +6,11 @@ from entidades import Esfera, Plane
 from vectors import Ponto, Vetor
 
 
+def scale_rgb(color: tuple) -> tuple:
+    """Return the color scaled to 255"""
+    return tuple(rgb / 255 for rgb in color)
+
+
 class Ray:
     """Class Representing a Ray in 3D Space
     Args:
@@ -64,8 +69,8 @@ class Camera:
         target: "Ponto",
         position: "Ponto",
         up: "Vetor",
-        vres: int = 200,
-        hres: int = 100,
+        vres: int = 1000,
+        hres: int = 800,
     ):
         """Initialize the Camera"""
         self.position = position
@@ -123,15 +128,13 @@ class Camera:
 
                 ray = Ray(self.position, direction)
 
-                image[j, i] = 150 if self.__intersect__(ray, targets) else 0
+                image[j, i] = (
+                    scale_rgb([150, 150, 150])
+                    if self.__intersect__(ray, targets)
+                    else [0, 0, 0]
+                )
 
         # pylint: disable=no-member
         cv.imshow("image", image)
         cv.waitKey(0)
         cv.destroyAllWindows("i")
-
-
-if __name__ == "__main__":
-    camera = Camera(Ponto(0, 0, 0), Ponto(0, 0, -5), Vetor(0, 1, 0))
-    # camera.__ray_casting__([Esfera(Ponto(0, 0, -10), 1, (150, 0, 0))])
-    camera.__ray_casting__([Plane(Ponto(0, 0, -10), Vetor(0, 0, 1), (150, 0, 0))])
