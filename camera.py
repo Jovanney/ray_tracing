@@ -1,59 +1,137 @@
-from vectors import Ponto, Vetor
-from objects import Plano, Esfera
+"""Camera class for 3D rendering"""
+
 import cv2 as cv
 import numpy as np
+from vectors import Ponto, Vetor
 
-def normalize(vector):
-    return vector / np.linalg.norm(vector)
 
-class ObjPointer:
-    def __init__(self, ptr_esfera=None, ptr_plano=None, tipo_objeto=None):
-        self.ptr_esfera = ptr_esfera
-        self.ptr_plano = ptr_plano
-        self.tipo = tipo_objeto
+def scale_rgb(color: tuple) -> tuple:
+    """Return the color scaled to 255"""
+    return tuple(rgb / 255 for rgb in color)
+
+
+class Ray:
+    """Class Representing a Ray in 3D Space
+    Args:
+        origin, direction
+    """
+
+    def __init__(self, origin: "Ponto", direction: "Vetor"):
+        """Initialize the Ray"""
+        self.origin = origin
+        self.direction = direction
+
+    def __str__(self):
+        """Return the string representation of the Ray"""
+        return f"Ray({self.origin}, {self.direction})"
+
+    def __repr__(self):
+        """Return the string representation of the Ray"""
+        return self.__str__()
+
+    def get_point(self, t: float) -> "Ponto":
+        """Return the point at t distance from the origin"""
+        return self.origin + (self.direction.__mul_escalar__(t))
+
+    def __add__(self, other: "Ray") -> "Ray":
+        """Return the sum of two rays"""
+        return Ray(
+            self.origin.__add__(other.origin), self.direction.__add__(other.direction)
+        )
+
+    def __sub__(self, other: "Ray") -> "Ray":
+        """Return the subtraction of two rays"""
+        return Ray(
+            self.origin.__sub__(other.origin), self.direction.__sub__(other.direction)
+        )
+
+    def __mul__(self, other: float) -> "Ray":
+        """Return the multiplication of a ray by a scalar"""
+        return Ray(self.origin.__mul__(other), self.direction.__mul__(other))
+
+    def __truediv__(self, other: float) -> "Ray":
+        """Return the division of a ray by a scalar"""
+        return Ray(self.origin.__truediv__(other), self.direction.__truediv__(other))
+
 
 class Camera:
-    def __init__(self, posicao, target, up_vector):
-        self.k = up_vector
-        self.posicao = posicao
-        self.W = (target - posicao)
-        self.W = normalize(self.W)
+    """Class Representing a Camera in 3D Space
+        w is the vector that always points to the center of the screen
+        v is the vector that's always points to the right and it's ortogonal to w and up
+        u is the vector that's always points up and it's ortogonal to w and v
+    Args:
+        target, position, up
+    """
 
-        self.U = np.cross(self.k, self.W)
-        self.U = normalize(self.U)
+    def __init__(
+        self,
+        target: "Ponto",
+        position: "Ponto",
+        up: "Vetor",
+        vres: int = 300,
+        hres: int = 300,
+    ):
+        """Initialize the Camera"""
+        self.position = position
+        self.target = target
+        self.up = up
 
-        self.UP = np.cross(self.W, self.U) * -1
-        self.UP = normalize(self.UP)
+        self.w: "Vetor" = self.target.__sub__(self.position)
+        self.v: "Vetor" = self.up.__cross__(self.w)
 
-    def intersect(self, vetor_atual, objects):
-        menor_t= 1000000
-        cor = [0, 0, 0]
-        for obj in objects:
-            if isinstance(obj, Esfera):
-                inter_esfera = obj.intersecao_com_a_reta(vetor_atual, self.posicao)
-                if inter_esfera.intersecoes:
-                    if inter_esfera.parametro <= menor_t and inter_esfera.parametro >= 0.01:
-                        cor = [255, 0, 0]
-                        menor_t = inter_esfera.parametro
-            elif isinstance(obj, Plano):
-                inter_plano = obj._calcula_intersecao(vetor_atual, self.posicao)
-                if inter_plano:
-                    if inter_plano.intersecoes:
-                        if inter_plano.parametro <= menor_t and inter_plano.parametro >= 0.01:
-                            cor = [0, 255, 0]
-                            menor_t = inter_plano.parametro
-        return cor
+        self.w = self.w.__normalize__()
+        self.v = self.v.__normalize__()
 
-    def raycasting(self, distancia, hres, vres, objects):
-        deslocamento_vertical = (2*0.5/(hres - 1)*self.U)
-        deslocamento_horizontal = (2*0.5/(vres - 1)*self.UP)
-        centro_tela = (self.W * distancia)
-        pixel_0_0 = centro_tela - (0.5 * self.U) - (0.5 * self.UP)
-        imagem = np.zeros((vres, hres, 3), dtype=np.uint8)  # Imagem a ser gerada
-        for i in range(vres):
-            for j in range(hres):
-                vetor_atual = pixel_0_0 + deslocamento_vertical*i + deslocamento_horizontal*j
-                imagem[j,i] = self.intersect(vetor_atual, objects)
-        cv.imshow("Raycasting", imagem)
+        self.u: "Vetor" = self.w.__cross__(self.v)
+        self.u = self.u.__normalize__()
+
+        self.targer_distance = self.position.__distance__(self.target)
+
+        self.vres = vres
+        self.hres = hres
+
+    def __intersect__(
+        self, ray: "Ray", targets: list
+    ) -> list[bool, list[int, int, int]]:
+        """Return the intersection of a ray with a target"""
+
+        smallest_distance = float("inf")
+        color = [0, 0, 0]
+
+        for target in targets:
+            intersection = target.__intersect_line__(ray.origin, ray.direction)
+            print(intersection)
+            if intersection:
+                distance_vetor = Vetor(
+                    intersection[0], intersection[1], intersection[2]
+                )
+
+                distance = ray.origin.__distance__(distance_vetor)
+                if distance < smallest_distance:
+                    smallest_distance = distance
+                    color = target.color
+
+        return color
+
+    def __ray_casting__(self, targets: list, distancia):
+        """Return the image generated by the camera"""
+
+        image = np.zeros((self.vres, self.hres, 3), dtype=np.uint8)
+
+        for i in range(self.vres):
+            for j in range(self.hres):
+                ray = Ray(
+                    origin=self.position,
+                    direction=(
+                        self.w.__mul_escalar__(distancia)
+                        + self.v.__mul_escalar__(2 * 0.5 * (j / self.hres - 0.5))
+                        + self.u.__mul_escalar__(2 * 0.5 * (i / self.vres - 0.5))
+                    ),
+                )
+                color = self.__intersect__(ray, targets)
+                image[i, j] = color
+
+        # pylint: disable=no-member
+        cv.imshow("image", image)
         cv.waitKey(0)
-        cv.destroyAllWindows('i')
+        cv.destroyAllWindows("i")

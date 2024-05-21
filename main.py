@@ -1,23 +1,40 @@
+"""Main File"""
+
 from vectors import Ponto, Vetor
-from objects import Esfera, Plano
+from entidades import Esfera, Plane
 from camera import Camera
-import numpy as np
+
 
 def main():
-    # Definição dos valores para a câmera, alvo, up, centro da esfera, ponto do plano e normal ao plano   
-    # Criação dos objetos Ponto e Vector com base nos valores fornecidos
-    camera_ponto =  np.array([0,1,0])
-    alvo_ponto = np.array([2,0,0])
-    up_vector = np.array([0,1,0])
+    """Main Function"""
+
+    camera = Camera(
+        target=Ponto(2, 0, 0),
+        position=Ponto(0, 1, 0),
+        up=Vetor(0, 1, 0),
+    )
+
+    plano = Plane(
+        point=Ponto(2, 0, 0),
+        normal=Vetor(0, 1, 0),
+        color=(255, 0, 0),
+    )
+
+    esfera = Esfera(
+        center=Ponto(2, 0, 0),
+        radius=0.25,
+        color=(0, 128, 0),
+    )
+
+    esfera2 = Esfera(
+        center=Ponto(4, 0, 0),
+        radius=1,
+        color=(128, 128, 0),
+    )
+
+    entidades = [esfera, esfera2, plano]
+
+    camera.__ray_casting__(entidades, 1)
 
 
-    # Inicialização dos objetos Camera, Esfera e Plano com base nos dados inseridos
-    cam = Camera(camera_ponto, alvo_ponto, up_vector)
-    esfera = Esfera(np.array([2,0,0]), 0.25)  # Raio da esfera definido como 1
-    plano = Plano(np.array([0,1,0]), np.array([0,-1,0]))  # Ponto e vetor normal ao plano definidos como 0
-    objects = [plano,esfera]
-    # Realização do raycasting com os parâmetros fornecidos
-    cam.raycasting(1, 500, 500, objects)
-
-if __name__ == "__main__":
-    main()
+main()
