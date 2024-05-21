@@ -21,12 +21,16 @@ class Esfera:
         c = sum((p - c) ** 2 for p, c in zip(line_point, self.center)) - self.radius**2
         discriminant = b**2 - 4 * a * c
         if discriminant < 0:
-            return None, None
+            return None
         t1 = (-b + discriminant**0.5) / (2 * a)
         t2 = (-b - discriminant**0.5) / (2 * a)
-        return tuple(p + t1 * v for p, v in zip(line_point, line_vector)), tuple(
-            p + t2 * v for p, v in zip(line_point, line_vector)
-        )
+
+        if 0 < t1 < t2:
+            return tuple(p + t1 * v for p, v in zip(line_point, line_vector))
+        if 0 < t2 < t1:
+            return tuple(p + t2 * v for p, v in zip(line_point, line_vector))
+
+        return None
 
 
 class Plane:
@@ -40,7 +44,8 @@ class Plane:
     def __intersect_line__(self, line_point, line_vector):
         """Calculate the Intersection Point of a Plane and a Line"""
         d = tuple(p - lp for p, lp in zip(self.point, line_point))
-        t = sum(n * dp for n, dp in zip(self.normal, d)) / sum(
-            n * lv for n, lv in zip(self.normal, line_vector)
-        )
+        denominator = sum(n * lv for n, lv in zip(self.normal, line_vector))
+        if denominator == 0:
+            return (False, None)
+        t = sum(n * dp for n, dp in zip(self.normal, d)) / denominator
         return tuple(lp + t * lv for lp, lv in zip(line_point, line_vector))
