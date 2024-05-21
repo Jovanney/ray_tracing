@@ -15,8 +15,8 @@ def main():
     )
 
     plano = Plane(
-        point=Ponto(0, 1, 0),
-        normal=Vetor(0, -1, 0),
+        point=Ponto(2, 0, 0),
+        normal=Vetor(0, 1, 0),
         color=(255, 0, 0),
     )
 
@@ -26,9 +26,15 @@ def main():
         color=(0, 128, 0),
     )
 
-    entidades = [plano, esfera]
+    esfera2 = Esfera(
+        center=Ponto(4, 0, 0),
+        radius=1,
+        color=(128, 128, 0),
+    )
 
-    camera.__ray_casting__(entidades)
+    entidades = [esfera, esfera2, plano]
+
+    camera.__ray_casting__(entidades, 1)
 
 
 main()
