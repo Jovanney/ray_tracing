@@ -3,6 +3,7 @@
 from vectors import Ponto, Vetor
 from entidades import Esfera, Plane
 from camera import Camera
+from ray_casting import RayCasting
 
 
 def main():
@@ -13,6 +14,8 @@ def main():
         position=Ponto(4, 100, 0),
         up=Vetor(0, 1, 0),
     )
+
+    ray_casting = RayCasting(hres=300, vres=300)
 
     plano = Plane(
         point=Ponto(2, 0, 0),
@@ -34,7 +37,7 @@ def main():
 
     entidades = [esfera, esfera2, plano]
 
-    camera.__ray_casting__(entidades, camera.target_distance)
+    ray_casting.__generate_image__(entidades, camera.target_distance, camera)
 
 
 main()
