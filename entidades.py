@@ -20,7 +20,7 @@ class Esfera:
         )
         c = sum((p - c) ** 2 for p, c in zip(line_point, self.center)) - self.radius**2
         discriminant = b**2 - 4 * a * c
-        if discriminant < 0:
+        if discriminant <= 0:
             return None
         t1 = (-b + discriminant**0.5) / (2 * a)
         t2 = (-b - discriminant**0.5) / (2 * a)
@@ -46,6 +46,6 @@ class Plane:
         d = tuple(p - lp for p, lp in zip(self.point, line_point))
         denominator = sum(n * lv for n, lv in zip(self.normal, line_vector))
         if denominator == 0:
-            return (False, None)
+            return None
         t = sum(n * dp for n, dp in zip(self.normal, d)) / denominator
         return tuple(lp + t * lv for lp, lv in zip(line_point, line_vector))
