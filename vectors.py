@@ -55,6 +55,9 @@ class Vetor(Ponto):
         return (self.x**2 + self.y**2 + self.z**2) ** 0.5
 
     def __normalize__(self):
+        if self.__magnitude__() == 0:
+            return Vetor(0, 0, 0)
+
         return Vetor(
             self.x / self.__magnitude__(),
             self.y / self.__magnitude__(),
