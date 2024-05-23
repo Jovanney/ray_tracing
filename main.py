@@ -9,8 +9,8 @@ def main():
     """Main Function"""
 
     camera = Camera(
-        target=Ponto(2, 0, 0),
-        position=Ponto(0, 1, 0),
+        target=Ponto(5, 0, 0),
+        position=Ponto(4, 100, 0),
         up=Vetor(0, 1, 0),
     )
 
@@ -34,7 +34,7 @@ def main():
 
     entidades = [esfera, esfera2, plano]
 
-    camera.__ray_casting__(entidades, 1)
+    camera.__ray_casting__(entidades, camera.target_distance)
 
 
 main()
