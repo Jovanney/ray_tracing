@@ -1,5 +1,7 @@
 """Module containing the classes that represent the entities in the 3D space"""
 
+from vectors import Ponto
+
 
 class Esfera:
     """Class Representing a Sphere in 3D Space"""
@@ -49,3 +51,65 @@ class Plane:
             return None
         t = sum(n * dp for n, dp in zip(self.normal, d)) / denominator
         return tuple(lp + t * lv for lp, lv in zip(line_point, line_vector))
+
+
+class Mesh:
+    """Class Representing a Mesh in 3D Space"""
+
+    def __init__(
+        self,
+        triangle_quantity: int,
+        vertices_quantity: int,
+        vertices: list[Ponto],
+        triangle_tuple_vertices: list[tuple[int, int, int]],
+        triangle_normals: list,
+        vertex_normals: list,
+        color,
+    ):
+        self.triangle_quantity = triangle_quantity
+        self.vertices_quantity = vertices_quantity
+        self.vertices = vertices
+        self.triangle_tuple_vertices = triangle_tuple_vertices
+        self.triangle_normals = triangle_normals
+        self.vertex_normals = vertex_normals
+
+        self.color = color
+
+    def __point_in_triangle__(self, point, triangle_vertices):
+        """Check if a Point is Inside a Triangle using Barycentric Coordinates"""
+        v0 = triangle_vertices[2].__sub__(triangle_vertices[0])
+        v1 = triangle_vertices[1].__sub__(triangle_vertices[0])
+        v2 = point.__sub__(triangle_vertices[0])
+
+        d00 = v0.__mul__(v0)
+        d01 = v0.__mul__(v1)
+        d11 = v1.__mul__(v1)
+        d20 = v2.__mul__(v0)
+        d21 = v2.__mul__(v1)
+
+        denom = d00 * d11 - d01 * d01
+
+        v = (d11 * d20 - d01 * d21) / denom
+        w = (d00 * d21 - d01 * d20) / denom
+        u = 1.0 - v - w
+
+        return (v >= 0) and (w >= 0) and (u >= 0)
+
+    def __intersect_line__(self, line_point, line_vector):
+        """Calculate the Intersection Point of a Mesh and a Line"""
+        for index, triangle in enumerate(self.triangle_tuple_vertices):
+            triangle_vertices = [self.vertices[i] for i in triangle]
+            triangle_normal = self.triangle_normals[index]
+            plane = Plane(triangle_vertices[0], triangle_normal, self.color)
+            intersection_point = plane.__intersect_line__(line_point, line_vector)
+            if intersection_point is not None:
+                intersection_point = Ponto(
+                    intersection_point[0], intersection_point[1], intersection_point[2]
+                )
+                if self.__point_in_triangle__(intersection_point, triangle_vertices):
+                    return (
+                        intersection_point.x,
+                        intersection_point.y,
+                        intersection_point.z,
+                    )
+        return None

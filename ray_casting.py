@@ -31,9 +31,7 @@ class RayCasting:
                 color = camera.__intersect__(ray, targets)
                 self.image[i, j] = color
                 self.processed_pixels += 1
-                print(
-                    f"Progress: {self.processed_pixels / self.total_pixels * 100:.2f}%"
-                )
+            print(f"Progress: {self.processed_pixels / self.total_pixels * 100:.2f}%")
 
         # pylint: disable=no-member
         cv.imshow("image", self.image)
