@@ -3,6 +3,7 @@
 # import cv2 as cv
 # import numpy as np
 from vectors import Ponto, Vetor
+from entidades import TriangleMesh, Plane, Esfera
 
 
 def scale_rgb(color: tuple) -> tuple:
@@ -92,22 +93,32 @@ class Camera:
 
     def __intersect__(
         self, ray: "Ray", targets: list
-    ) -> list[bool, list[int, int, int]]:
+    ) -> list[int, int, int]:
         """Return the intersection of a ray with a target"""
 
         smallest_distance = float("inf")
-        color = [0, 0, 0]
+        color = tuple([0, 0, 0])
 
         for target in targets:
-            intersection = target.__intersect_line__(ray.origin, ray.direction)
-            if intersection:
-                distance_vetor = Vetor(
-                    intersection[0], intersection[1], intersection[2]
-                )
+            if isinstance(target, TriangleMesh):  # Verifica se o alvo é uma instância de Mesh
+                intersection = target.__intersect_line__(ray.origin, ray.direction)
+                if intersection:
+                    distance = ray.origin.__distance__(intersection)
+                    if distance < smallest_distance:
+                        smallest_distance = distance
+                        color = target.color
+                    
 
-                distance = ray.origin.__distance__(distance_vetor)
-                if distance < smallest_distance:
-                    smallest_distance = distance
+            elif isinstance(target, Plane):  # Verifica se o alvo é uma instância de Plane
+                intersection = target.__intersect_line__(ray.origin, ray.direction)
+                if intersection:
+                    # Defina a cor do plano aqui, se desejar
+                    color = target.color
+
+            elif isinstance(target, Esfera):  # Verifica se o alvo é uma instância de Sphere
+                intersection = target.__intersect__(ray)
+                if intersection:
+                    # Defina a cor da esfera aqui, se desejar
                     color = target.color
 
         return color

@@ -1,5 +1,5 @@
 """Module for Vector Operations"""
-
+import numpy as np
 import math
 
 
@@ -42,7 +42,13 @@ class Vetor(Ponto):
         return self.x * p.x + self.y * p.y + self.z * p.z
 
     def __mul_escalar__(self, escalar):
-        return Vetor(self.x * escalar, self.y * escalar, self.z * escalar)
+        if isinstance(escalar, (int, float)):
+            return Vetor(self.x * escalar, self.y * escalar, self.z * escalar)
+        else:
+            raise TypeError("Multiplicação de vetor só é suportada por escalares.")
+        
+    def as_array(self):
+        return np.array([self.x, self.y, self.z])
 
     def __cross__(self, p):
         return Vetor(
@@ -55,14 +61,14 @@ class Vetor(Ponto):
         return (self.x**2 + self.y**2 + self.z**2) ** 0.5
 
     def __normalize__(self):
-        if self.__magnitude__() == 0:
+        magnitude = self.__magnitude__()
+        if magnitude == 0:
             return Vetor(0, 0, 0)
-
-        return Vetor(
-            self.x / self.__magnitude__(),
-            self.y / self.__magnitude__(),
-            self.z / self.__magnitude__(),
-        )
+        return Vetor(self.x / magnitude, self.y / magnitude, self.z / magnitude)
 
     def __angle__(self, p: "Vetor"):
         return math.acos((self * p) / (self.__magnitude__() * p.__magnitude__()))
+    
+    def __truediv__(self, other):
+        return Vetor(self.x / other, self.y / other, self.z / other)
+

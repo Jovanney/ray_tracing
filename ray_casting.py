@@ -13,7 +13,7 @@ class RayCasting:
     def __init__(self, hres, vres):
         self.hres = hres
         self.vres = vres
-        self.image = np.zeros((self.vres, self.hres, 3), dtype=np.uint8)
+        self.image = np.zeros((self.vres, self.hres, 3, 3), dtype=np.uint8)
         self.total_pixels = self.vres * self.hres
         self.processed_pixels = 0
 
@@ -29,7 +29,8 @@ class RayCasting:
                     ),
                 )
                 color = camera.__intersect__(ray, targets)
-                self.image[i, j] = color
+                # Assign the same color to each RGB channel separately
+                self.image[i, j] = np.array([color, color, color])
                 self.processed_pixels += 1
                 print(
                     f"Progress: {self.processed_pixels / self.total_pixels * 100:.2f}%"
