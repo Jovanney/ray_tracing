@@ -1,9 +1,11 @@
 """Main File"""
 
+import numpy as np
 from vectors import Ponto, Vetor
-from entidades import Esfera, Mesh, Plane
+from entidades import Mesh
 from camera import Camera
 from ray_casting import RayCasting
+from transformation import Transformacao
 
 
 def main():
@@ -33,7 +35,7 @@ def main():
 
     camera = Camera(
         target=Ponto(0, 0, 0),
-        position=Ponto(100, 200, 1000),
+        position=Ponto(100, 200, 100),
         up=Vetor(0, 1, 0),
     )
 
@@ -66,6 +68,11 @@ def main():
         triangle_tuple_vertices=[(0, 1, 4), (1, 2, 4), (2, 3, 4), (0, 3, 4)],
         vertex_normals=[],
     )
+
+    angle = np.pi/ 4
+    matriz_escala = Transformacao.criar_matriz_escala(0.5, 0.5, 0.5)
+
+    mesh = Transformacao.aplicar_transformacao_malha(mesh, matriz_escala)
 
     entidades = [mesh]
 
