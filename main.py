@@ -69,10 +69,13 @@ def main():
         vertex_normals=[],
     )
 
-    angle = np.pi/ 4
-    matriz_escala = Transformacao.criar_matriz_escala(0.5, 0.5, 0.5)
+    angulo_180 = np.pi
+    angulo_120 = np.pi / 3
+    matriz_rotacao_y = Transformacao.criar_matriz_rotacao_y(angulo_180)
+    matriz_rotacao_x = Transformacao.criar_matriz_rotacao_x(angulo_120)
+    matriz_rotacao = matriz_rotacao_x @ matriz_rotacao_y
 
-    mesh = Transformacao.aplicar_transformacao_malha(mesh, matriz_escala)
+    mesh = Transformacao.aplicar_transformacao_malha(mesh, matriz_rotacao)
 
     entidades = [mesh]
 
