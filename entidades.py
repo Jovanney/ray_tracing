@@ -1,6 +1,6 @@
 """Module containing the classes that represent the entities in the 3D space"""
 
-from vectors import Ponto
+from vectors import Ponto, Vetor
 
 
 class Esfera:
@@ -27,6 +27,14 @@ class Esfera:
         self.k_reflexao = k_reflexao
         self.k_transmissao = k_transmissao
         self.n_rugosidade = n_rugosidade
+
+    def __get_normal_vector_to_intersection_point__(self, intersection_point):
+        """Calculate the Normal Vector to the Intersection Point of a Sphere"""
+        return Vetor(
+            intersection_point.x - self.center.x,
+            intersection_point.y - self.center.y,
+            intersection_point.z - self.center.z,
+        ).__normalize__()
 
     def __intersect_line__(self, line_point, line_vector):
         """Calculate the Intersection Points of a Sphere and a Line"""
