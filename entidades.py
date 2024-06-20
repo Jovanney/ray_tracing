@@ -93,7 +93,7 @@ class Mesh:
         w = (d00 * d21 - d01 * d20) / denom
         u = 1.0 - v - w
 
-        return (v >= 0) and (w >= 0) and (u >= 0)
+        return (0 <= v <= 1) and (0 <= w <= 1) and (0 <= u <= 1)
 
     def __intersect_line__(self, line_point, line_vector):
         """Calculate the Intersection Point of a Mesh and a Line"""
