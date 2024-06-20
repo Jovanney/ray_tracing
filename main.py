@@ -2,7 +2,7 @@
 
 import numpy as np
 from vectors import Ponto, Vetor
-from entidades import Mesh
+from entidades import Mesh, Esfera, Plane
 from camera import Camera
 from ray_casting import RayCasting
 from transformation import Transformacao
@@ -60,22 +60,38 @@ def main():
     # )
 
     mesh = Mesh(
-        triangle_quantity=4,
+        triangle_quantity=1,
         vertices_quantity=5,
-        vertices=[p0, p1, p2, p3, p4],
+        vertices=[p0, p1, p4],
         triangle_normals=[normal1, normal2, normal3, normal4],
         color=(0, 0, 255),
-        triangle_tuple_vertices=[(0, 1, 4), (1, 2, 4), (2, 3, 4), (0, 3, 4)],
+        triangle_tuple_vertices=[(0, 1, 2)],
         vertex_normals=[],
+    )
+
+    esfera = Esfera(
+        center=Ponto(0, 0, 0),
+        radius=50,
+        color=(255, 0, 0),
+    )
+
+    plano = Plane(
+        point=Ponto(0, 0, 0),
+        normal=Vetor(0, 1, 0),
+        color=(255, 0, 0),
     )
 
     angulo_180 = np.pi
     angulo_120 = np.pi / 3
     matriz_rotacao_y = Transformacao.criar_matriz_rotacao_y(angulo_180)
-    matriz_rotacao_x = Transformacao.criar_matriz_rotacao_x(angulo_120)
+    matriz_rotacao_x = Transformacao.criar_matriz_rotacao_x(np.pi / 2)
     matriz_rotacao = matriz_rotacao_x @ matriz_rotacao_y
 
-    mesh = Transformacao.aplicar_transformacao_malha(mesh, matriz_rotacao)
+    mesh = Transformacao.aplicar_transformacao_malha(mesh, matriz_rotacao_x)
+
+    # mesh = Transformacao.change_scale_mesh(mesh, 1.3, 1.3, 1.3)
+
+    esfera = Transformacao.translate_sphere(esfera, 0, 0, 50)
 
     entidades = [mesh]
 
