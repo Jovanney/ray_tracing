@@ -1,51 +1,35 @@
 import numpy as np
 
 from entidades import Esfera, Plane, Mesh
-from fonte_de_luz import Luz
 from vectors import Ponto
 
 
-# od é a cor do objeto
 def phong(entidade, luzes, ponto_intersec, camera_position):
-    # Cores
-    Ia = np.array([255, 255, 255])  # Intensisade da luz ambiente
+    Ia = np.array([255, 0, 0])  # Intensisade da luz ambiente
 
     # Vetores
-    # L Vetor que vai do ponto de intersecção até a fonte de luz
+    # V é o vetor que vai do ponto de intersecção até a câmera
     # N é o vetor Normal do objeto
+    # R é o vetor de reflexão
+    # L Vetor que vai do ponto de intersecção até a fonte de luz
+
+    V = np.array(
+        [
+            camera_position.x - ponto_intersec.x,
+            camera_position.y - ponto_intersec.y,
+            camera_position.z - ponto_intersec.z,
+        ]
+    )
 
     if isinstance(entidade, Esfera):
         N = np.array(
             entidade.__get_normal_vector_to_intersection_point__(ponto_intersec)
         )
 
-        V = np.array(
-            [
-                camera_position.x - ponto_intersec.x,
-                camera_position.y - ponto_intersec.y,
-                camera_position.z - ponto_intersec.z,
-            ]
-        )
-
     elif isinstance(entidade, Plane):
         N = np.array(entidade.normal)
 
-        V = np.array(
-            [
-                camera_position.x - ponto_intersec.x,
-                camera_position.y - ponto_intersec.y,
-                camera_position.z - ponto_intersec.z,
-            ]
-        )
-
     elif isinstance(entidade, Mesh):
-        V = np.array(
-            [
-                camera_position.x - ponto_intersec.x,
-                camera_position.y - ponto_intersec.y,
-                camera_position.z - ponto_intersec.z,
-            ]
-        )
         intersection_point = None
         for index, triangle in enumerate(entidade.triangle_tuple_vertices):
             triangle_vertices = [entidade.vertices[i] for i in triangle]
@@ -53,11 +37,17 @@ def phong(entidade, luzes, ponto_intersec, camera_position):
             plane = Plane(triangle_vertices[0], triangle_normal, entidade.color)
             intersection_point = plane.__intersect_line__(ponto_intersec, V)
             if intersection_point is not None:
-                intersection_point = Ponto(intersection_point[0], intersection_point[1], intersection_point[2])
-                if entidade.__point_in_triangle__(intersection_point, triangle_vertices):
-                    N = np.array([triangle_normal.x, triangle_normal.y, triangle_normal.z])
+                intersection_point = Ponto(
+                    intersection_point[0], intersection_point[1], intersection_point[2]
+                )
+                if entidade.__point_in_triangle__(
+                    intersection_point, triangle_vertices
+                ):
+                    N = np.array(
+                        [triangle_normal.x, triangle_normal.y, triangle_normal.z]
+                    )
                     break
-    
+
         if intersection_point is not None:
             N = N / np.linalg.norm(N)  # Normaliza a normal N
 
@@ -66,14 +56,19 @@ def phong(entidade, luzes, ponto_intersec, camera_position):
     # Il * od * kd * (N.dot(L)) componente difusa
     # Il * ks * (R.dot(V)) ** n componente especular
 
-
     entidade.color = np.array(entidade.color)
 
     i_sum = np.array([0.0, 0.0, 0.0])
 
     for luz in luzes:
         luz.I = np.array(luz.I)
-        L = np.array([luz.x - ponto_intersec.x, luz.y - ponto_intersec.y, luz.z - ponto_intersec.z])
+        L = np.array(
+            [
+                luz.x - ponto_intersec.x,
+                luz.y - ponto_intersec.y,
+                luz.z - ponto_intersec.z,
+            ]
+        )
         L = L / np.linalg.norm(L)  # Normaliza o vetor L
 
         R = 2 * N * (N.dot(L)) - L
@@ -83,7 +78,7 @@ def phong(entidade, luzes, ponto_intersec, camera_position):
         R_dot_V = max(R.dot(V), 0)  # Garante que o produto escalar é não-negativo
 
         I_difusa = luz.I * entidade.color * entidade.k_difuso * N_dot_L
-        I_especular = luz.I * entidade.k_especular * (R_dot_V ** entidade.n_rugosidade)
+        I_especular = luz.I * entidade.k_especular * (R_dot_V**entidade.n_rugosidade)
 
         I = I_difusa + I_especular
         i_sum += I
@@ -96,14 +91,14 @@ def phong(entidade, luzes, ponto_intersec, camera_position):
     return cor_final
 
 
-#esfera = Esfera(
-    #center=Ponto(0, 0, 0),
-    #radius=50,
-    #color=(255, 0, 0),
-    #k_ambiental=0.7,
-    #k_difuso=0.7,
-    #k_especular=0.7,
-    #n_rugosidade=10,
-#)
+# esfera = Esfera(
+# center=Ponto(0, 0, 0),
+# radius=50,
+# color=(255, 0, 0),
+# k_ambiental=0.7,
+# k_difuso=0.7,
+# k_especular=0.7,
+# n_rugosidade=10,
+# )
 
-#phong(esfera, [Luz(0, 0, 0, [255, 255, 255])], Ponto(0, 0, 0), Ponto(100, 200, 100))
+# phong(esfera, [Luz(0, 0, 0, [255, 255, 255])], Ponto(0, 0, 0), Ponto(100, 200, 100))
