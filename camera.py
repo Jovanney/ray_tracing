@@ -6,6 +6,7 @@ from vectors import Ponto, Vetor
 from phong_with_args import phong
 from fonte_de_luz import Luz
 
+
 def scale_rgb(color: tuple) -> tuple:
     """Return the color scaled to 255"""
     return tuple(rgb / 255 for rgb in color)
@@ -109,6 +110,11 @@ class Camera:
                 distance = ray.origin.__distance__(distance_vetor)
                 if distance < smallest_distance:
                     smallest_distance = distance
-                    color = phong(target, [Luz(0, 0, 0, [255, 255, 255])], Ponto(intersection[0], intersection[1], intersection[2]), self.position)
+                    color = phong(
+                        target,
+                        [Luz(0, 0, 0, [255, 255, 255]), Luz(2, 0, 0, [255, 255, 255])],
+                        Ponto(intersection[0], intersection[1], intersection[2]),
+                        self.position,
+                    )
 
         return color
