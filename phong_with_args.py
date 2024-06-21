@@ -5,7 +5,7 @@ from vectors import Ponto
 
 
 def phong(entidade, luzes, ponto_intersec, camera_position):
-    Ia = np.array([255, 0, 0])  # Intensisade da luz ambiente
+    Ia = np.array([255, 255, 255])  # Intensisade da luz ambiente
 
     # Vetores
     # V é o vetor que vai do ponto de intersecção até a câmera
@@ -27,7 +27,13 @@ def phong(entidade, luzes, ponto_intersec, camera_position):
         )
 
     elif isinstance(entidade, Plane):
-        N = np.array(entidade.normal)
+        N = np.array(
+            [
+                entidade.normal.x,
+                entidade.normal.y,
+                entidade.normal.z,
+            ]
+        )
 
     elif isinstance(entidade, Mesh):
         intersection_point = None
@@ -89,16 +95,3 @@ def phong(entidade, luzes, ponto_intersec, camera_position):
     cor_final = [min(255, max(0, int(i))) for i in cor]
 
     return cor_final
-
-
-# esfera = Esfera(
-# center=Ponto(0, 0, 0),
-# radius=50,
-# color=(255, 0, 0),
-# k_ambiental=0.7,
-# k_difuso=0.7,
-# k_especular=0.7,
-# n_rugosidade=10,
-# )
-
-# phong(esfera, [Luz(0, 0, 0, [255, 255, 255])], Ponto(0, 0, 0), Ponto(100, 200, 100))
