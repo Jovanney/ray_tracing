@@ -1,5 +1,6 @@
 """Main File"""
 
+import numpy as np
 from vectors import Ponto, Vetor
 from entidades import Mesh, Esfera, Plane
 from camera import Camera
@@ -32,9 +33,21 @@ def main():
     normal4 = v7.__cross__(v8).__normalize__()
 
     camera = Camera(
-        target=Ponto(0, 0, 0),
-        position=Ponto(100, 200, 100),
-        up=Vetor(0, 1, 0),
+        target=Ponto(2, 0, 2),
+        position=Ponto(2, -2.5, 2),
+        up=Vetor(0, 0, 1),
+    )
+
+    esfera1 = Esfera(
+        center=Ponto(2, 0, 2),
+        radius=1,
+        color=(255, 255, 0),
+        k_difuso=0.7,
+        k_especular=0.7,
+        k_ambiental=0.1,
+        k_reflexao=0.0,
+        k_transmissao=0.0,
+        n_rugosidade=2.0,
     )
 
     ray_casting = RayCasting(hres=500, vres=500)
@@ -70,18 +83,18 @@ def main():
         k_ambiental=0.1,
         k_reflexao=0.0,
         k_transmissao=0.0,
-        n_rugosidade=2.0
+        n_rugosidade=2.0,
     )
 
-    esfera = Esfera(
-        center=Ponto(20, 50, 70),
-        radius=50,
-        color=(255, 0, 0),
-        k_ambiental=0.7,
-        k_difuso=0.7,
-        k_especular=0.7,
-        n_rugosidade=10,
-    )
+    # esfera = Esfera(
+    #     center=Ponto(20, 50, 70),
+    #     radius=1,
+    #     color=(255, 0, 0),
+    #     k_ambiental=0.7,
+    #     k_difuso=0.7,
+    #     k_especular=0.7,
+    #     n_rugosidade=10,
+    # )
 
     # plano = Plane(
     #     point=Ponto(0, 0, 0),
@@ -89,7 +102,7 @@ def main():
     #     color=(255, 0, 0),
     # )
 
-    entidades = [mesh, esfera]
+    entidades = [esfera1]
 
     ray_casting.__generate_image__(entidades, 1, camera)
 
