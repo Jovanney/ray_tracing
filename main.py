@@ -1,11 +1,9 @@
 """Main File"""
 
-import numpy as np
 from vectors import Ponto, Vetor
 from entidades import Mesh, Esfera, Plane
 from camera import Camera
 from ray_casting import RayCasting
-from transformation import Transformacao
 
 
 def main():
@@ -17,20 +15,20 @@ def main():
     p3 = Ponto(0, -100, 0)
     p4 = Ponto(0, 0, 100)
 
-    v1 = p1.__sub__(p0)
-    v2 = p4.__sub__(p0)
+    v1 = p1 - p0
+    v2 = p4 - p0
     normal1 = v1.__cross__(v2).__normalize__()
 
-    v3 = p2.__sub__(p1)
-    v4 = p4.__sub__(p1)
+    v3 = p2 - p1
+    v4 = p4 - p1
     normal2 = v3.__cross__(v4).__normalize__()
 
-    v5 = p3.__sub__(p2)
-    v6 = p4.__sub__(p2)
+    v5 = p3 - p2
+    v6 = p4 - p2
     normal3 = v5.__cross__(v6).__normalize__()
 
-    v7 = p0.__sub__(p3)
-    v8 = p4.__sub__(p3)
+    v7 = p0 - p3
+    v8 = p4 - p3
     normal4 = v7.__cross__(v8).__normalize__()
 
     camera = Camera(
@@ -69,29 +67,17 @@ def main():
         vertex_normals=[],
     )
 
-    esfera = Esfera(
-        center=Ponto(0, 0, 0),
-        radius=50,
-        color=(255, 0, 0),
-    )
+    # esfera = Esfera(
+    #     center=Ponto(0, 0, 0),
+    #     radius=50,
+    #     color=(255, 0, 0),
+    # )
 
-    plano = Plane(
-        point=Ponto(0, 0, 0),
-        normal=Vetor(0, 1, 0),
-        color=(255, 0, 0),
-    )
-
-    angulo_180 = np.pi
-    angulo_120 = np.pi / 3
-    matriz_rotacao_y = Transformacao.criar_matriz_rotacao_y(angulo_180)
-    matriz_rotacao_x = Transformacao.criar_matriz_rotacao_x(np.pi / 2)
-    matriz_rotacao = matriz_rotacao_x @ matriz_rotacao_y
-
-    mesh = Transformacao.aplicar_transformacao_malha(mesh, matriz_rotacao_x)
-
-    # mesh = Transformacao.change_scale_mesh(mesh, 1.3, 1.3, 1.3)
-
-    esfera = Transformacao.translate_sphere(esfera, 0, 0, 50)
+    # plano = Plane(
+    #     point=Ponto(0, 0, 0),
+    #     normal=Vetor(0, 1, 0),
+    #     color=(255, 0, 0),
+    # )
 
     entidades = [mesh]
 

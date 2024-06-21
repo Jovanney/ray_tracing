@@ -30,11 +30,11 @@ class Esfera:
 
     def __get_normal_vector_to_intersection_point__(self, intersection_point):
         """Calculate the Normal Vector to the Intersection Point of a Sphere"""
-        return Vetor(
+        return [
             intersection_point.x - self.center.x,
             intersection_point.y - self.center.y,
             intersection_point.z - self.center.z,
-        ).__normalize__()
+        ]
 
     def __intersect_line__(self, line_point, line_vector):
         """Calculate the Intersection Points of a Sphere and a Line"""
