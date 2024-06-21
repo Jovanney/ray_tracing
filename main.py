@@ -65,13 +65,23 @@ def main():
         color=(0, 0, 255),
         triangle_tuple_vertices=[(0, 1, 2)],
         vertex_normals=[],
+        k_difuso=0.7,
+        k_especular=0.7,
+        k_ambiental=0.1,
+        k_reflexao=0.0,
+        k_transmissao=0.0,
+        n_rugosidade=2.0
     )
 
-    # esfera = Esfera(
-    #     center=Ponto(0, 0, 0),
-    #     radius=50,
-    #     color=(255, 0, 0),
-    # )
+    esfera = Esfera(
+        center=Ponto(20, 50, 70),
+        radius=50,
+        color=(255, 0, 0),
+        k_ambiental=0.7,
+        k_difuso=0.7,
+        k_especular=0.7,
+        n_rugosidade=10,
+    )
 
     # plano = Plane(
     #     point=Ponto(0, 0, 0),
@@ -79,7 +89,7 @@ def main():
     #     color=(255, 0, 0),
     # )
 
-    entidades = [mesh]
+    entidades = [mesh, esfera]
 
     ray_casting.__generate_image__(entidades, 1, camera)
 
