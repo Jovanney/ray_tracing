@@ -34,24 +34,27 @@ def phong(entidade, luzes, ponto_intersec, camera_position):
 
     entidade.color = np.array(entidade.color)
 
+    i_sum = np.array([0, 0, 0])
+
     for luz in luzes:
         luz.I = np.array(luz.I)
-        if isinstance(entidade, Esfera):
-            L = np.array(
-                [
-                    luz.x - ponto_intersec.x,
-                    luz.y - ponto_intersec.y,
-                    luz.z - ponto_intersec.z,
-                ]
-            )
+        L = np.array(
+            [
+                luz.x - ponto_intersec.x,
+                luz.y - ponto_intersec.y,
+                luz.z - ponto_intersec.z,
+            ]
+        )
 
-            R = 2 * (N.dot(L)) * N - L
+        R = 2 * (N.dot(L)) * N - L
 
-            I = luz.I * entidade.color * entidade.k_difuso * (
-                N.dot(L)
-            ) + luz.I * entidade.k_especular * ((R.dot(V)) ** entidade.n_rugosidade)
+        I = luz.I * entidade.color * entidade.k_difuso * (
+            N.dot(L)
+        ) + luz.I * entidade.k_especular * ((R.dot(V)) ** entidade.n_rugosidade)
 
-    cor = (entidade.k_ambiental * Ia) + I
+        i_sum += I
+
+    cor = (entidade.k_ambiental * Ia) + i_sum
 
     return [min(255, i) for i in cor]
 
