@@ -32,43 +32,64 @@ def main():
     v8 = p4 - p3
     normal4 = v7.__cross__(v8).__normalize__()
 
+    # caso com uma esfera
+    # target=Ponto(2, 0, 2),
+    # position=Ponto(2, -2.5, 2),
+    #  [Luz(0, 0, 2, [255, 255, 255]), Luz(4, 0, 2, [255, 255, 255])],
+
     camera = Camera(
         target=Ponto(2, 0, 2),
-        position=Ponto(2, -2.5, 2),
+        position=Ponto(2, -5, 3),
         up=Vetor(0, 0, 1),
     )
 
-    esfera1 = Esfera(
-        center=Ponto(2, 0, 2),
-        radius=1,
+    # Metallic Plane
+    plano = Plane(
+        point=Ponto(0, 0, 1),
+        normal=Vetor(0, 0, 1),
         color=(255, 255, 0),
+        k_difuso=0.1,
+        k_especular=0.9,
+        k_ambiental=0.3,
+        n_rugosidade=100,
+    )
+
+    # Opaque Sphere
+    esfera2 = Esfera(
+        center=Ponto(0.2, 1, 1),
+        radius=0.7,
+        color=(0, 255, 0),
+        k_difuso=0.9,
+        k_especular=0.1,
+        k_ambiental=0.2,
+        n_rugosidade=10,
+    )
+
+    esfera1 = Esfera(
+        center=Ponto(2, 0, 1),
+        radius=0.7,
+        color=(255, 0, 0),
         k_difuso=0.7,
         k_especular=0.7,
         k_ambiental=0.1,
         k_reflexao=0.0,
         k_transmissao=0.0,
-        n_rugosidade=2.0,
+        n_rugosidade=1.0,
+    )
+
+    esfera3 = Esfera(
+        center=Ponto(4, 1, 1),
+        radius=0.7,
+        color=(0, 0, 255),
+        k_difuso=0.7,
+        k_especular=0.7,
+        k_ambiental=0.1,
+        k_reflexao=0.0,
+        k_transmissao=0.0,
+        n_rugosidade=1.0,
     )
 
     ray_casting = RayCasting(hres=500, vres=500)
-
-    # plano = Plane(
-    #     point=Ponto(2, 0, 0),
-    #     normal=Vetor(0, 1, 0),
-    #     color=(255, 0, 0),
-    # )
-
-    # esfera = Esfera(
-    #     center=Ponto(2, 0, 0),
-    #     radius=0.25,
-    #     color=(0, 128, 0),
-    # )
-
-    # esfera2 = Esfera(
-    #     center=Ponto(4, 0, 0),
-    #     radius=1,
-    #     color=(128, 128, 0),
-    # )
 
     mesh = Mesh(
         triangle_quantity=1,
@@ -102,7 +123,7 @@ def main():
     #     color=(255, 0, 0),
     # )
 
-    entidades = [esfera1]
+    entidades = [esfera2, esfera1, esfera3, plano]
 
     ray_casting.__generate_image__(entidades, 1, camera)
 
