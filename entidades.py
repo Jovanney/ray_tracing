@@ -1,6 +1,6 @@
 """Module containing the classes that represent the entities in the 3D space"""
 
-from vectors import Ponto, Vetor
+from vectors import Ponto
 
 
 class Esfera:
