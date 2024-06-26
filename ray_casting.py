@@ -29,7 +29,8 @@ class RayCasting:
                     ),
                 )
                 color = camera.__intersect__(ray, targets)
-                self.image[i, j] = color
+
+                self.image[i, j] = color[::-1]
                 self.processed_pixels += 1
             print(f"Progress: {self.processed_pixels / self.total_pixels * 100:.2f}%")
 
