@@ -21,10 +21,14 @@ def phong(entidade, luzes, ponto_intersec, camera_position):
         ]
     )
 
+    V = V / np.linalg.norm(V)  # Normaliza o vetor V
+
     if isinstance(entidade, Esfera):
         N = np.array(
             entidade.__get_normal_vector_to_intersection_point__(ponto_intersec)
         )
+
+        N = N / np.linalg.norm(N)  # Normaliza a normal N
 
     elif isinstance(entidade, Plane):
         N = np.array(
@@ -34,6 +38,8 @@ def phong(entidade, luzes, ponto_intersec, camera_position):
                 entidade.normal.z,
             ]
         )
+
+        N = N / np.linalg.norm(N)  # Normaliza a normal N
 
     elif isinstance(entidade, Mesh):
         intersection_point = None
@@ -91,7 +97,6 @@ def phong(entidade, luzes, ponto_intersec, camera_position):
 
     cor = (entidade.k_ambiental * Ia) + i_sum
 
-    # Garante que a cor está no intervalo [0, 255] e converte para inteiros
     cor_final = [min(255, max(0, int(i))) for i in cor]
 
     return cor_final
