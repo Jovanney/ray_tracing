@@ -2,6 +2,7 @@
 
 # import cv2 as cv
 # import numpy as np
+from entidades import Mesh
 from vectors import Ponto, Vetor
 from phong_with_args import phong
 from fonte_de_luz import Luz
@@ -112,7 +113,14 @@ class Camera:
                     smallest_distance = distance
                     color = phong(
                         target,
-                        [Luz(2, 0, 20, [255, 255, 255])],
+                        [
+                            # Luz(2, 1, 1, [255, 255, 255]),
+                            # Luz(3, 1, 1, [255, 255, 255]),
+                            # Luz(100, 0, 10, [255, 255, 255]),
+                            # Luz(2, 102, 2, [255, 255, 255]),
+                            Luz(2, 1, 0, [153, 153, 153]),
+                            Luz(0, -3, 0, [153, 153, 153]),
+                        ],
                         Ponto(intersection[0], intersection[1], intersection[2]),
                         self.position,
                     )
