@@ -55,24 +55,13 @@ def phong(entidade, luzes, ponto_intersec, camera_position):
         )
 
     elif isinstance(entidade, Mesh):
-        intersection_point = None
-        for index, triangle in enumerate(entidade.triangle_tuple_vertices):
-            triangle_vertices = [entidade.vertices[i] for i in triangle]
-            triangle_normal = entidade.triangle_normals[index]
-            plane = Plane(triangle_vertices[0], triangle_normal, entidade.color)
-            intersection_point = plane.__intersect_line__(ponto_intersec, V)
-            if intersection_point is not None:
-                intersection_point = Ponto(
-                    intersection_point[0], intersection_point[1], intersection_point[2]
-                )
-                if entidade.__point_in_triangle__(
-                    intersection_point, triangle_vertices
-                ):
-                    N = np.array(
-                        [triangle_normal.x, triangle_normal.y, triangle_normal.z]
-                    )
-                    break
-
+        N = np.array(
+            [
+                entidade.normal_to_intersection_point.x,
+                entidade.normal_to_intersection_point.y,
+                entidade.normal_to_intersection_point.z,
+            ]
+        )
     if N is not None:
         N /= np.linalg.norm(N)  # Normaliza a normal N
 
