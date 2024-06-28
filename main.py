@@ -39,26 +39,26 @@ def main():
 
     camera = Camera(
         target=Ponto(0, 0, 1),
-        position=Ponto(0, 0, 0),
+        position=Ponto(0, 10, 100),
         up=Vetor(0, 1, 0),
     )
 
     plano = Plane(
         point=Ponto(0, 0, 1),
         normal=Vetor(0, 0, 1),
-        color=(255, 255, 0),
+        color=(1, 1, 0),
         k_difuso=0.7,
         k_especular=0.0,
-        # k_ambiental=0.0,
+        k_ambiental=0.4,
         # k_reflexao=0.0,
-        k_transmissao=0.0,
+        # k_transmissao=0.0,
         n_rugosidade=2,
     )
 
     esfera_monitor = Esfera(
         center=Ponto(0, -1, 3),
         radius=1,
-        color=(255, 0, 0),
+        color=(1, 0, 0),
         k_difuso=0.8,
         k_ambiental=0.1,
         k_especular=0.1,
@@ -125,7 +125,7 @@ def main():
     #     color=(255, 0, 0),
     # )
 
-    entidades = [esfera_monitor]
+    entidades = [plano]
 
     ray_casting.__generate_image__(entidades, 1, camera)
 

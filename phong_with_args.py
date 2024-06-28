@@ -40,7 +40,7 @@ def phong(entidade, luzes, ponto_intersec, camera_position):
         ]
     )
 
-    V /= np.linalg.norm(V)  # Normaliza o vetor V
+    V = V / np.linalg.norm(V)  # Normaliza o vetor V
 
     N = None
 
@@ -66,6 +66,7 @@ def phong(entidade, luzes, ponto_intersec, camera_position):
                 entidade.normal_to_intersection_point.z,
             ]
         )
+
     if N is not None or np.linalg.norm(N) != 0:
         # N /= np.linalg.norm(N)  # Normaliza a normal N
         N = N / np.linalg.norm(N)
@@ -86,23 +87,17 @@ def phong(entidade, luzes, ponto_intersec, camera_position):
                 luz.z - ponto_intersec.z,
             ]
         )
-        L /= np.linalg.norm(L)  # Normaliza o vetor L
+        L = L / np.linalg.norm(L)  # Normaliza o vetor L
 
         R = 2 * N * (N.dot(L)) - L
-        R /= np.linalg.norm(R)  # Normaliza o vetor R
 
         N_dot_L = clamp(0, N.dot(L), 1)
         R_dot_V = clamp(0, R.dot(V), 1)
 
-        # R_dot_V = np.clip(R.dot(V), 0, 1)
+        I_difusa = luz.I * entidade.color * entidade.k_difuso * N_dot_L
+        I_especular = luz.I * entidade.k_especular * (R_dot_V**entidade.n_rugosidade)
 
-        if N_dot_L > 0:
-            I_difusa = luz.I * entidade.color * entidade.k_difuso * N_dot_L
-            I_especular = (
-                luz.I * entidade.k_especular * (R_dot_V**entidade.n_rugosidade)
-            )
-
-            i_sum += I_difusa + I_especular
+        i_sum += I_difusa + I_especular
 
     cor = (entidade.k_ambiental * Ia) + i_sum
     cor_final = [min(255, max(0, int(i))) for i in cor]
