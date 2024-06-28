@@ -38,52 +38,64 @@ def main():
     #  [Luz(0, 0, 2, [255, 255, 255]), Luz(4, 0, 2, [255, 255, 255])],
 
     camera = Camera(
-        target=Ponto(2, 0, 2),
-        position=Ponto(2, -5, 3),
-        up=Vetor(0, 0, 1),
+        target=Ponto(0, 0, 1),
+        position=Ponto(0, 10, 100),
+        up=Vetor(0, 1, 0),
     )
 
-    # Metallic Plane
     plano = Plane(
         point=Ponto(0, 0, 1),
         normal=Vetor(0, 0, 1),
-        color=(255, 255, 0),
-        k_difuso=0.1,
-        k_especular=0.9,
-        k_ambiental=0.3,
-        n_rugosidade=100,
+        color=(1, 1, 0),
+        k_difuso=0.7,
+        k_especular=0.0,
+        k_ambiental=0.4,
+        # k_reflexao=0.0,
+        # k_transmissao=0.0,
+        n_rugosidade=2,
+    )
+
+    esfera_monitor = Esfera(
+        center=Ponto(0, -1, 3),
+        radius=1,
+        color=(1, 0, 0),
+        k_difuso=0.8,
+        k_ambiental=0.1,
+        k_especular=0.1,
+        n_rugosidade=1.0,
     )
 
     # Opaque Sphere
     esfera2 = Esfera(
-        center=Ponto(0.2, 1, 1),
+        center=Ponto(0.2, 1, 3),
         radius=0.7,
         color=(0, 255, 0),
-        k_difuso=0.9,
+        k_difuso=1,
         k_especular=0.1,
         k_ambiental=0.2,
         n_rugosidade=10,
     )
 
+    # Metallic Sphere
     esfera1 = Esfera(
         center=Ponto(2, 0, 1),
         radius=0.7,
-        color=(255, 0, 0),
-        k_difuso=0.7,
-        k_especular=0.7,
-        k_ambiental=0.1,
+        color=(255, 0, 0),  # Metallic surfaces can still have color
+        k_difuso=0.2,  # Lower diffuse reflection
+        k_especular=0.9,  # High specular reflection
+        k_ambiental=0.1,  # Ambient reflection usually remains low
         k_reflexao=0.0,
         k_transmissao=0.0,
-        n_rugosidade=1.0,
+        n_rugosidade=100,  # Higher roughness for sharper specular highlights
     )
 
     esfera3 = Esfera(
-        center=Ponto(4, 1, 1),
+        center=Ponto(4, 1, 3),
         radius=0.7,
         color=(0, 0, 255),
         k_difuso=0.7,
-        k_especular=0.7,
-        k_ambiental=0.1,
+        k_especular=0.0,
+        k_ambiental=0.0,
         k_reflexao=0.0,
         k_transmissao=0.0,
         n_rugosidade=1.0,
@@ -107,23 +119,13 @@ def main():
         n_rugosidade=2.0,
     )
 
-    # esfera = Esfera(
-    #     center=Ponto(20, 50, 70),
-    #     radius=1,
-    #     color=(255, 0, 0),
-    #     k_ambiental=0.7,
-    #     k_difuso=0.7,
-    #     k_especular=0.7,
-    #     n_rugosidade=10,
-    # )
-
     # plano = Plane(
     #     point=Ponto(0, 0, 0),
     #     normal=Vetor(0, 1, 0),
     #     color=(255, 0, 0),
     # )
 
-    entidades = [esfera2, esfera1, esfera3, plano]
+    entidades = [plano]
 
     ray_casting.__generate_image__(entidades, 1, camera)
 

@@ -120,6 +120,7 @@ class Mesh:
         self.triangle_tuple_vertices = triangle_tuple_vertices
         self.triangle_normals = triangle_normals
         self.vertex_normals = vertex_normals
+        self.normal_to_intersection_point = None
         self.k_difuso = k_difuso
         self.k_especular = k_especular
         self.k_ambiental = k_ambiental
@@ -161,6 +162,7 @@ class Mesh:
                     intersection_point[0], intersection_point[1], intersection_point[2]
                 )
                 if self.__point_in_triangle__(intersection_point, triangle_vertices):
+                    self.normal_to_intersection_point = triangle_normal
                     return (
                         intersection_point.x,
                         intersection_point.y,
