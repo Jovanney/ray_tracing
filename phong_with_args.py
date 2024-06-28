@@ -6,6 +6,10 @@ from entidades import Esfera, Plane, Mesh
 from vectors import Ponto
 
 
+def clamp(minimum, x, maximum):
+    return max(minimum, min(x, maximum))
+
+
 def phong(entidade, luzes, ponto_intersec, camera_position):
     """
     Calcula a cor resultante em um ponto de interseção usando o modelo de Phong.
@@ -20,7 +24,7 @@ def phong(entidade, luzes, ponto_intersec, camera_position):
         Uma lista representando a cor RGB resultante no ponto de interseção.
     """
 
-    Ia = np.array([255, 255, 255])  # Intensisade da luz ambiente
+    Ia = np.array([51, 51, 51])  # Intensisade da luz ambiente
 
     # Vetores
     # V é o vetor que vai do ponto de intersecção até a câmera
@@ -36,7 +40,7 @@ def phong(entidade, luzes, ponto_intersec, camera_position):
         ]
     )
 
-    V /= np.linalg.norm(V)  # Normaliza o vetor V
+    V = V / np.linalg.norm(V)  # Normaliza o vetor V
 
     N = None
 
@@ -62,9 +66,10 @@ def phong(entidade, luzes, ponto_intersec, camera_position):
                 entidade.normal_to_intersection_point.z,
             ]
         )
-    if N is not None:
-        N /= np.linalg.norm(N)  # Normaliza a normal N
 
+    if N is not None or np.linalg.norm(N) != 0:
+        # N /= np.linalg.norm(N)  # Normaliza a normal N
+        N = N / np.linalg.norm(N)
     # ka * Ia é o ambiente (luz ambiente)
     # Para cada ponto de luz nós iremos rodar a parte da direita da equação
     # Il * od * kd * (N.dot(L)) componente difusa
@@ -82,21 +87,17 @@ def phong(entidade, luzes, ponto_intersec, camera_position):
                 luz.z - ponto_intersec.z,
             ]
         )
-        L /= np.linalg.norm(L)  # Normaliza o vetor L
+        L = L / np.linalg.norm(L)  # Normaliza o vetor L
 
         R = 2 * N * (N.dot(L)) - L
-        R /= np.linalg.norm(R)  # Normaliza o vetor R
 
-        N_dot_L = max(N.dot(L), 0)  # Garante que o produto escalar é não-negativo
-        R_dot_V = max(R.dot(V), 0)  # Garante que o produto escalar é não-negativo
+        N_dot_L = clamp(0, N.dot(L), 1)
+        R_dot_V = clamp(0, R.dot(V), 1)
 
-        if N_dot_L > 0:
-            I_difusa = luz.I * entidade.color * entidade.k_difuso * N_dot_L
-            I_especular = (
-                luz.I * entidade.k_especular * (R_dot_V**entidade.n_rugosidade)
-            )
+        I_difusa = luz.I * entidade.color * entidade.k_difuso * N_dot_L
+        I_especular = luz.I * entidade.k_especular * (R_dot_V**entidade.n_rugosidade)
 
-            i_sum += I_difusa + I_especular
+        i_sum += I_difusa + I_especular
 
     cor = (entidade.k_ambiental * Ia) + i_sum
     cor_final = [min(255, max(0, int(i))) for i in cor]
