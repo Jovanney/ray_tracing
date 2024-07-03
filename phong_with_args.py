@@ -1,16 +1,48 @@
 """Módulo para cálculo de iluminação usando o modelo de Phong."""
 
 import numpy as np
-
+from ray import Ray
 from entidades import Esfera, Plane, Mesh
-from vectors import Ponto
+from vectors import Ponto, Vetor
 
 
 def clamp(minimum, x, maximum):
     return max(minimum, min(x, maximum))
 
+def find_closest_intersection(ray, entidades):
+    """
+    Encontra a entidade mais próxima e o ponto de interseção com base no raio fornecido.
 
-def phong(entidade, luzes, ponto_intersec, camera_position):
+    Args:
+        ray: O raio a ser testado para interseção.
+        entidades: Lista de entidades na cena.
+
+    Returns:
+        A entidade mais próxima e o ponto de interseção.
+    """
+    closest_entity = None
+    closest_point = None
+    min_distance = float('inf')
+
+    for entidade in entidades:
+        intersection = entidade.__intersect_line__(
+            (ray.origin.x, ray.origin.y, ray.origin.z),
+            (ray.direction.x, ray.direction.y, ray.direction.z)
+        )
+        if intersection:
+            distance = np.linalg.norm(np.array([
+                intersection[0] - ray.origin.x,
+                intersection[1] - ray.origin.y,
+                intersection[2] - ray.origin.z
+            ]))
+            if distance < min_distance:
+                min_distance = distance
+                closest_entity = entidade
+                closest_point = Ponto(intersection[0], intersection[1], intersection[2])
+
+    return closest_entity, closest_point
+
+def phong(entidade, luzes, ponto_intersec, camera_position, entidades, profundidade = 0):
     """
     Calcula a cor resultante em um ponto de interseção usando o modelo de Phong.
 
@@ -100,6 +132,25 @@ def phong(entidade, luzes, ponto_intersec, camera_position):
         i_sum += I_difusa + I_especular
 
     cor = (entidade.k_ambiental * Ia) + i_sum
+
+    # Adicionar reflexão recursiva
+    if profundidade < 3:
+        refletido_direcao = 2 * N * (N.dot(V)) - V
+        refletido_direcao = refletido_direcao / np.linalg.norm(refletido_direcao)  # Normaliza o vetor refletido
+        refletido_origem = ponto_intersec
+        raio_refletido = Ray(
+            Ponto(refletido_origem.x, refletido_origem.y, refletido_origem.z),
+            Vetor(refletido_direcao[0], refletido_direcao[1], refletido_direcao[2])
+        )
+        
+        
+        entidade_refletida, ponto_intersecao_refletida = find_closest_intersection(raio_refletido, entidades)
+        if entidade_refletida and ponto_intersecao_refletida:
+            cor_refletida = phong(entidade_refletida, luzes, ponto_intersecao_refletida, camera_position, entidades, profundidade + 1)
+            cor = cor + entidade.k_reflexao * np.array(cor_refletida) 
+
     cor_final = [min(255, max(0, int(i))) for i in cor]
 
     return cor_final
+
+    

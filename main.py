@@ -39,7 +39,7 @@ def main():
 
     camera = Camera(
         target=Ponto(0, 0, 1),
-        position=Ponto(0, 10, 100),
+        position=Ponto(0, 10, 10),
         up=Vetor(0, 1, 0),
     )
 
@@ -56,14 +56,38 @@ def main():
     )
 
     esfera_monitor = Esfera(
-        center=Ponto(0, -1, 3),
-        radius=1,
+        center=Ponto(3, 0, 0),
+        radius=2,
         color=(1, 0, 0),
         k_difuso=0.8,
         k_ambiental=0.1,
-        k_especular=0.1,
+        k_especular=0.6,
         n_rugosidade=1.0,
+        k_reflexao=0.5,
     )
+
+    esfera_monitor2 = Esfera(
+        center=Ponto(-3, 0, 0),
+        radius=2,
+        color=(0, 1, 0),
+        k_difuso=0.8,
+        k_ambiental=0.1,
+        k_especular=0.6,
+        n_rugosidade=1.0,
+        k_reflexao=0.7,
+    )
+    
+    esfera_monitor3 = Esfera(
+        center=Ponto(0, -3, 0),
+        radius=2,
+        color=(0, 0, 1),
+        k_difuso=0.8,
+        k_ambiental=0.1,
+        k_especular=0.6,
+        n_rugosidade=1.0,
+        k_reflexao=0.7,
+    )
+
 
     # Opaque Sphere
     esfera2 = Esfera(
@@ -125,7 +149,7 @@ def main():
     #     color=(255, 0, 0),
     # )
 
-    entidades = [plano]
+    entidades = [esfera_monitor, esfera_monitor2, esfera_monitor3]
 
     ray_casting.__generate_image__(entidades, 1, camera)
 
