@@ -163,7 +163,7 @@ def phong(entidade, luzes, ponto_intersec, camera_position, entidades, profundid
             cor = cor + entidade.k_reflexao * np.array(cor_refletida)
 
     # Adicionar refração recursiva
-    if profundidade_refracao < 3 and hasattr(entidade, 'indice_refracao') and entidade.indice_refracao is not None:
+    if profundidade_refracao < 3 and entidade.indice_refracao is not None:
         if entidade.indice_refracao != 0:
             refracao_direcao = refract(V, N, indice_ref_ambiente, entidade.indice_refracao)
             if refracao_direcao is not None:
