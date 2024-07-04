@@ -42,28 +42,58 @@ def find_closest_intersection(ray, entidades):
 
     return closest_entity, closest_point
 
-def phong(entidade, luzes, ponto_intersec, camera_position, entidades, profundidade = 0):
+def refract(V, N, n1, n2):
+    """
+    Calcula o vetor de refração usando a Lei de Snell.
+    
+    Args:
+        V: Vetor incidente (direção do raio).
+        N: Vetor normal no ponto de interseção.
+        n1: Índice de refração do meio original.
+        n2: Índice de refração do meio transmitido.
+    
+    Returns:
+        O vetor refratado ou None se a refração total interna ocorrer.
+    """
+    if n2 == 0:
+        return None
+
+    n = n1 / n2
+    cos_i = -np.dot(N, V)
+    sin_t2 = n**2 * (1 - cos_i**2)
+    
+    if sin_t2 > 1:
+        # Refração total interna
+        return None
+    
+    cos_t = np.sqrt(1 - sin_t2)
+    T = n * V + (n * cos_i - cos_t) * N
+    return T / np.linalg.norm(T)
+
+def phong(entidade, luzes, ponto_intersec, camera_position, entidades, profundidade_reflexao=0, profundidade_refracao=0, indice_ref_ambiente=1.0):
     """
     Calcula a cor resultante em um ponto de interseção usando o modelo de Phong.
 
     Args:
-        entity: A entidade (Esfera, Plano ou Malha) na qual a luz incide.
-        lights: Lista de fontes de luz que incidem sobre a entidade.
-        intersection_point: Ponto de interseção da luz com a entidade.
+        entidade: A entidade (Esfera, Plano ou Malha) na qual a luz incide.
+        luzes: Lista de fontes de luz que incidem sobre a entidade.
+        ponto_intersec: Ponto de interseção da luz com a entidade.
         camera_position: Posição da câmera.
+        entidades: Lista de entidades na cena.
+        profundidade_reflexao: Profundidade da recursão para reflexão.
+        profundidade_refracao: Profundidade da recursão para refração.
+        indice_ref_ambiente: Índice de refração do ambiente.
 
     Returns:
         Uma lista representando a cor RGB resultante no ponto de interseção.
     """
 
-    Ia = np.array([51, 51, 51])  # Intensisade da luz ambiente
+    if profundidade_reflexao >= 3 and profundidade_refracao >= 3:
+        return [0, 0, 0]
+
+    Ia = np.array([51, 51, 51])  # Intensidade da luz ambiente
 
     # Vetores
-    # V é o vetor que vai do ponto de intersecção até a câmera
-    # N é o vetor Normal do objeto
-    # R é o vetor de reflexão
-    # L Vetor que vai do ponto de intersecção até a fonte de luz
-
     V = np.array(
         [
             camera_position.x - ponto_intersec.x,
@@ -71,25 +101,15 @@ def phong(entidade, luzes, ponto_intersec, camera_position, entidades, profundid
             camera_position.z - ponto_intersec.z,
         ]
     )
-
     V = V / np.linalg.norm(V)  # Normaliza o vetor V
 
     N = None
-
     if isinstance(entidade, Esfera):
         N = np.array(
             entidade.__get_normal_vector_to_intersection_point__(ponto_intersec)
         )
-
     elif isinstance(entidade, Plane):
-        N = np.array(
-            [
-                entidade.normal.x,
-                entidade.normal.y,
-                entidade.normal.z,
-            ]
-        )
-
+        N = np.array([entidade.normal.x, entidade.normal.y, entidade.normal.z])
     elif isinstance(entidade, Mesh):
         N = np.array(
             [
@@ -98,14 +118,8 @@ def phong(entidade, luzes, ponto_intersec, camera_position, entidades, profundid
                 entidade.normal_to_intersection_point.z,
             ]
         )
-
-    if N is not None or np.linalg.norm(N) != 0:
-        # N /= np.linalg.norm(N)  # Normaliza a normal N
-        N = N / np.linalg.norm(N)
-    # ka * Ia é o ambiente (luz ambiente)
-    # Para cada ponto de luz nós iremos rodar a parte da direita da equação
-    # Il * od * kd * (N.dot(L)) componente difusa
-    # Il * ks * (R.dot(V)) ** n componente especular
+    if N is not None and np.linalg.norm(N) != 0:
+        N = N / np.linalg.norm(N)  # Normaliza a normal N
 
     entidade.color = np.array(entidade.color)
     i_sum = np.array([0.0, 0.0, 0.0])
@@ -134,7 +148,7 @@ def phong(entidade, luzes, ponto_intersec, camera_position, entidades, profundid
     cor = (entidade.k_ambiental * Ia) + i_sum
 
     # Adicionar reflexão recursiva
-    if profundidade < 3:
+    if profundidade_reflexao < 3:
         refletido_direcao = 2 * N * (N.dot(V)) - V
         refletido_direcao = refletido_direcao / np.linalg.norm(refletido_direcao)  # Normaliza o vetor refletido
         refletido_origem = ponto_intersec
@@ -142,12 +156,28 @@ def phong(entidade, luzes, ponto_intersec, camera_position, entidades, profundid
             Ponto(refletido_origem.x, refletido_origem.y, refletido_origem.z),
             Vetor(refletido_direcao[0], refletido_direcao[1], refletido_direcao[2])
         )
-        
-        
+
         entidade_refletida, ponto_intersecao_refletida = find_closest_intersection(raio_refletido, entidades)
         if entidade_refletida and ponto_intersecao_refletida:
-            cor_refletida = phong(entidade_refletida, luzes, ponto_intersecao_refletida, camera_position, entidades, profundidade + 1)
-            cor = cor + entidade.k_reflexao * np.array(cor_refletida) 
+            cor_refletida = phong(entidade_refletida, luzes, ponto_intersecao_refletida, camera_position, entidades, profundidade_reflexao + 1, profundidade_refracao)
+            cor = cor + entidade.k_reflexao * np.array(cor_refletida)
+
+    # Adicionar refração recursiva
+    if profundidade_refracao < 3 and hasattr(entidade, 'indice_refracao') and entidade.indice_refracao is not None:
+        if entidade.indice_refracao != 0:
+            refracao_direcao = refract(V, N, indice_ref_ambiente, entidade.indice_refracao)
+            if refracao_direcao is not None:
+                refracao_direcao = refracao_direcao / np.linalg.norm(refracao_direcao)  # Normaliza o vetor refratado
+                refracao_origem = ponto_intersec
+                raio_refratado = Ray(
+                    Ponto(refracao_origem.x, refracao_origem.y, refracao_origem.z),
+                    Vetor(refracao_direcao[0], refracao_direcao[1], refracao_direcao[2])
+                )
+                
+                entidade_refratada, ponto_intersecao_refratada = find_closest_intersection(raio_refratado, entidades)
+                if entidade_refratada and ponto_intersecao_refratada:
+                    cor_refratada = phong(entidade_refratada, luzes, ponto_intersecao_refratada, camera_position, entidades, profundidade_reflexao, profundidade_refracao + 1, entidade.indice_refracao)
+                    cor = cor + entidade.k_refracao * np.array(cor_refratada)
 
     cor_final = [min(255, max(0, int(i))) for i in cor]
 

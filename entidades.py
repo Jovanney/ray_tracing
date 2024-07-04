@@ -15,7 +15,8 @@ class Esfera:
         k_especular=0.0,
         k_ambiental=0.0,
         k_reflexao=0.0,
-        k_transmissao=0.0,
+        k_refracao=0.0,
+        indice_refracao=0.0,
         n_rugosidade=0.0,
     ):
         self.center = center
@@ -25,7 +26,8 @@ class Esfera:
         self.k_especular = k_especular
         self.k_ambiental = k_ambiental
         self.k_reflexao = k_reflexao
-        self.k_transmissao = k_transmissao
+        self.k_refracao = k_refracao
+        self.indice_refracao = indice_refracao
         self.n_rugosidade = n_rugosidade
 
     def __get_normal_vector_to_intersection_point__(self, intersection_point):
@@ -72,7 +74,8 @@ class Plane:
         k_especular=0.0,
         k_ambiental=0.0,
         k_reflexao=0.0,
-        k_transmissao=0.0,
+        k_refracao=0.0,
+        indice_refracao=0.0,
         n_rugosidade=0.0,
     ):
         self.point = point
@@ -82,7 +85,8 @@ class Plane:
         self.k_especular = k_especular
         self.k_ambiental = k_ambiental
         self.k_reflexao = k_reflexao
-        self.k_transmissao = k_transmissao
+        self.k_refracao = k_refracao
+        self.indice_refracao = indice_refracao
         self.n_rugosidade = n_rugosidade
 
     def __intersect_line__(self, line_point, line_vector):
@@ -111,7 +115,8 @@ class Mesh:
         k_especular=0.0,
         k_ambiental=0.0,
         k_reflexao=0.0,
-        k_transmissao=0.0,
+        k_refracao=0.0,
+        indice_refracao=0.0,
         n_rugosidade=0.0,
     ):
         self.triangle_quantity = triangle_quantity
@@ -125,7 +130,8 @@ class Mesh:
         self.k_especular = k_especular
         self.k_ambiental = k_ambiental
         self.k_reflexao = k_reflexao
-        self.k_transmissao = k_transmissao
+        self.k_refracao = k_refracao
+        self.indice_refracao = indice_refracao
         self.n_rugosidade = n_rugosidade
 
         self.color = color

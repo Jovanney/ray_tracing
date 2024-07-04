@@ -140,7 +140,8 @@ def main():
         k_especular=0.9,  # High specular reflection
         k_ambiental=0.1,  # Ambient reflection usually remains low
         k_reflexao=0.0,
-        k_transmissao=0.0,
+        k_refracao=0.0,
+        indice_refracao=0.0,
         n_rugosidade=100,  # Higher roughness for sharper specular highlights
     )
 
@@ -152,7 +153,7 @@ def main():
         k_especular=0.0,
         k_ambiental=0.0,
         k_reflexao=0.0,
-        k_transmissao=0.0,
+        k_refracao=0.0,
         n_rugosidade=1.0,
     )
 
@@ -165,6 +166,8 @@ def main():
         k_especular=0.1,
         n_rugosidade=1.0,
         k_reflexao=0.5,
+        k_refracao=0.9,
+        indice_refracao=0.1,
     )
 
     esfera_monitor2 = Esfera(
@@ -176,6 +179,8 @@ def main():
         k_especular=0.6,
         n_rugosidade=1.0,
         k_reflexao=0.7,
+        k_refracao=0.6,
+        indice_refracao=0.3,
     )	    
 
     esfera_monitor3 = Esfera(
@@ -187,6 +192,8 @@ def main():
         k_especular=0.6,
         n_rugosidade=1.0,
         k_reflexao=0.7,
+        k_refracao=0.9,
+        indice_refracao=0.0,
     )
 
     ray_casting = RayCasting(hres=500, vres=500)
@@ -203,7 +210,7 @@ def main():
         k_especular=0.7,
         k_ambiental=0.1,
         k_reflexao=0.0,
-        k_transmissao=0.0,
+        k_refracao=0.0,
         n_rugosidade=2.0,
     )
 
