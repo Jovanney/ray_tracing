@@ -54,23 +54,6 @@ def find_closest_intersection(
     return color
 
 
-def calcular_cosseno_teta_t(n_in, n_out, cos_theta_in):
-    # Calcular o seno do ângulo de incidência usando a identidade trigonométrica sin^2(theta) + cos^2(theta) = 1
-    sin_theta_in = np.sqrt(1 - cos_theta_in**2)
-
-    # Aplicar a lei de Snell para calcular o seno do ângulo de refração
-    sin_theta_t = (n_in / n_out) * sin_theta_in
-
-    # Verificar se a refração é possível (senão ocorre reflexão total interna)
-    if sin_theta_t > 1:
-        return None
-
-    # Calcular o cosseno do ângulo de refração usando a identidade trigonométrica
-    cos_theta_t = np.sqrt(1 - sin_theta_t**2)
-
-    return cos_theta_t
-
-
 def refract(V, N, n_in, n_out):
     """
     Calcula o vetor de refração usando a Lei de Snell.
@@ -87,6 +70,9 @@ def refract(V, N, n_in, n_out):
     n = n_in / n_out
     cos_teta_1 = np.dot(N, -V)
     cos_teta_2 = np.sqrt(1 - n**2 * (1 - cos_teta_1**2))
+
+    if cos_teta_2 < 0:
+        return None
 
     V_refratado = n * V + (n * cos_teta_1 - cos_teta_2) * N
 
@@ -123,7 +109,7 @@ def phong(
     """
 
     if profundidade_reflexao >= 3 and profundidade_refracao >= 3:
-        return [0, 0, 0]
+        return [51, 51, 51]
 
     Ia = np.array([51, 51, 51])  # Intensidade da luz ambiente
 
@@ -183,7 +169,7 @@ def phong(
 
     # Adicionar reflexão recursiva
     if profundidade_reflexao < 3:
-        N_dot_V = clamp(0, N.dot(V), 1)
+        N_dot_V = N.dot(V)
         refletido_direcao = 2 * N * (N_dot_V) - V
         refletido_direcao = refletido_direcao / np.linalg.norm(
             refletido_direcao
@@ -207,7 +193,27 @@ def phong(
     # # Adicionar refração recursiva
     if profundidade_refracao < 3:
         if entidade.indice_refracao != 0:
-            refracao_direcao = refract(V, N, n_in=1.0, n_out=entidade.indice_refracao)
+            if isinstance(entidade, Esfera):
+                V_dot_N = np.dot(V, N)
+                if V_dot_N <= 0:
+                    N = N * -1
+                    V_dot_N = np.dot(V, N)
+                if np.dot(V, N) > 0:  # Ray inside the sphere
+                    print("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDd")
+                    # print(np.dot(V, N))
+                    refracao_direcao = refract(
+                        V, N * -1, n_in=entidade.indice_refracao, n_out=1.0
+                    )
+                else:
+                    print("FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF")
+                    refracao_direcao = refract(
+                        V, N, n_in=1.0, n_out=entidade.indice_refracao
+                    )
+            else:
+                refracao_direcao = refract(
+                    V, N, n_in=1.0, n_out=entidade.indice_refracao
+                )
+
             if refracao_direcao is not None:
                 refracao_direcao = refracao_direcao / np.linalg.norm(
                     refracao_direcao
