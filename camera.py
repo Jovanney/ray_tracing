@@ -2,16 +2,15 @@
 
 # import cv2 as cv
 # import numpy as np
-from entidades import Mesh
 from vectors import Ponto, Vetor
 from phong_with_args import phong
 from fonte_de_luz import Luz
 from ray import Ray
 
+
 def scale_rgb(color: tuple) -> tuple:
     """Return the color scaled to 255"""
     return tuple(rgb / 255 for rgb in color)
-
 
 
 class Camera:
@@ -71,12 +70,7 @@ class Camera:
                     color = phong(
                         target,
                         [
-                            # Luz(2, 1, 1, [255, 255, 255]),
-                            # Luz(3, 1, 1, [255, 255, 255]),
-                            # Luz(100, 0, 10, [255, 255, 255]),
-                            # Luz(2, 102, 2, [255, 255, 255]),
                             Luz(0, 5, 5, [255, 255, 255]),
-                           
                         ],
                         Ponto(intersection[0], intersection[1], intersection[2]),
                         self.position,
