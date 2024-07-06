@@ -84,22 +84,16 @@ def refract(V, N, n_in, n_out):
     Returns:
         O vetor refratado ou None se a refração total interna ocorrer.
     """
-    if n_out == 0:
-        return None
-
     n = n_in / n_out
-    cos_i = np.dot(N, V)
+    cos_teta_1 = np.dot(N, -V)
+    cos_teta_2 = np.sqrt(1 - n**2 * (1 - cos_teta_1**2))
 
-    cos_t = calcular_cosseno_teta_t(n_in, n_out, cos_i)
+    V_refratado = n * V + (n * cos_teta_1 - cos_teta_2) * N
 
-    if cos_t is None:
-        return None
+    if cos_teta_1 <= 0:
+        V_refratado = n * V + (n * cos_teta_1 + cos_teta_2) * N
 
-    if cos_t > 0:
-        T = n * V + (n * cos_i - cos_t) * N
-    else:
-        T = n * V + (n * cos_i + cos_t) * N
-    return T / np.linalg.norm(T)
+    return V_refratado
 
 
 def phong(

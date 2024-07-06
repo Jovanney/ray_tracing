@@ -1,6 +1,7 @@
 """Main File"""
 
 import numpy as np
+from phong_with_args import refract
 from vectors import Ponto, Vetor
 from entidades import Mesh, Esfera, Plane
 from camera import Camera
@@ -100,29 +101,33 @@ def main():
         color=(0, 0, 1),
         triangle_tuple_vertices=[(0, 1, 2)],
         vertex_normals=[],
-        k_difuso=0.7,
-        k_especular=0.7,
+        k_difuso=0.8,
         k_ambiental=0.1,
-        k_reflexao=0.0,
-        k_refracao=0.5,
-        n_rugosidade=2.0,
+        k_especular=0.1,
+        n_rugosidade=1.0,
+        k_reflexao=0.5,
+        k_refracao=1.0,
+        indice_refracao=1.0,
     )
 
     plano = Plane(
         point=Ponto(0, 0, 0),
         normal=Vetor(0, 1, 0),
-        color=(1, 0, 0),
+        color=(1, 1, 0),
         k_difuso=0.7,
         k_especular=0.7,
         k_ambiental=0.1,
-        k_reflexao=0.0,
-        k_refracao=0.5,
+        k_reflexao=1.0,
+        k_refracao=0.0,
         n_rugosidade=2.0,
+        indice_refracao=1.0,
     )
 
-    entidades = [esfera_vermelha, esfera_azul, esfera_verde, esfera_azul_nao]
+    entidades = [esfera_vermelha, esfera_azul, esfera_verde]
 
     ray_casting.__generate_image__(entidades, 1, camera)
+
+    # result = refract(np.array([0.707107, -0.707107]), np.array([0, 1]), 9, 10)
 
 
 main()
