@@ -47,8 +47,8 @@ def main():
         k_especular=0.1,
         n_rugosidade=1.0,
         k_reflexao=0.5,
-        k_refracao=0.0,
-        indice_refracao=0.1,
+        k_refracao=1.0,
+        indice_refracao=1.0,
     )
 
     esfera_verde = Esfera(
@@ -60,7 +60,20 @@ def main():
         k_especular=0.6,
         n_rugosidade=1.0,
         k_reflexao=0.5,
-        k_refracao=0.6,
+        k_refracao=1.0,
+        indice_refracao=0.3,
+    )
+
+    esfera_azul_nao = Esfera(
+        center=Ponto(3, 0, -6),
+        radius=2,
+        color=(1, 1, 0),
+        k_difuso=0.8,
+        k_ambiental=0.1,
+        k_especular=0.6,
+        n_rugosidade=1.0,
+        k_reflexao=0.5,
+        k_refracao=1.0,
         indice_refracao=0.3,
     )
 
@@ -91,17 +104,23 @@ def main():
         k_especular=0.7,
         k_ambiental=0.1,
         k_reflexao=0.0,
-        k_refracao=0.0,
+        k_refracao=0.5,
         n_rugosidade=2.0,
     )
 
-    # plano = Plane(
-    #     point=Ponto(0, 0, 0),
-    #     normal=Vetor(0, 1, 0),
-    #     color=(255, 0, 0),
-    # )
+    plano = Plane(
+        point=Ponto(0, 0, 0),
+        normal=Vetor(0, 1, 0),
+        color=(1, 0, 0),
+        k_difuso=0.7,
+        k_especular=0.7,
+        k_ambiental=0.1,
+        k_reflexao=0.0,
+        k_refracao=0.5,
+        n_rugosidade=2.0,
+    )
 
-    entidades = [esfera_vermelha, esfera_verde, esfera_azul]
+    entidades = [esfera_vermelha, esfera_azul, esfera_verde, esfera_azul_nao]
 
     ray_casting.__generate_image__(entidades, 1, camera)
 

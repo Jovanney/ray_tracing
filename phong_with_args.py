@@ -54,7 +54,24 @@ def find_closest_intersection(
     return color
 
 
-def refract(V, N, n1, n2):
+def calcular_cosseno_teta_t(n_in, n_out, cos_theta_in):
+    # Calcular o seno do ângulo de incidência usando a identidade trigonométrica sin^2(theta) + cos^2(theta) = 1
+    sin_theta_in = np.sqrt(1 - cos_theta_in**2)
+
+    # Aplicar a lei de Snell para calcular o seno do ângulo de refração
+    sin_theta_t = (n_in / n_out) * sin_theta_in
+
+    # Verificar se a refração é possível (senão ocorre reflexão total interna)
+    if sin_theta_t > 1:
+        return None
+
+    # Calcular o cosseno do ângulo de refração usando a identidade trigonométrica
+    cos_theta_t = np.sqrt(1 - sin_theta_t**2)
+
+    return cos_theta_t
+
+
+def refract(V, N, n_in, n_out):
     """
     Calcula o vetor de refração usando a Lei de Snell.
 
@@ -67,19 +84,21 @@ def refract(V, N, n1, n2):
     Returns:
         O vetor refratado ou None se a refração total interna ocorrer.
     """
-    if n2 == 0:
+    if n_out == 0:
         return None
 
-    n = n1 / n2
-    cos_i = -np.dot(N, V)
-    sin_t2 = n**2 * (1 - cos_i**2)
+    n = n_in / n_out
+    cos_i = np.dot(N, V)
 
-    if sin_t2 > 1:
-        # Refração total interna
+    cos_t = calcular_cosseno_teta_t(n_in, n_out, cos_i)
+
+    if cos_t is None:
         return None
 
-    cos_t = np.sqrt(1 - sin_t2)
-    T = n * V + (n * cos_i - cos_t) * N
+    if cos_t > 0:
+        T = n * V + (n * cos_i - cos_t) * N
+    else:
+        T = n * V + (n * cos_i + cos_t) * N
     return T / np.linalg.norm(T)
 
 
@@ -109,7 +128,7 @@ def phong(
         Uma lista representando a cor RGB resultante no ponto de interseção.
     """
 
-    if profundidade_reflexao > 3 and profundidade_refracao > 3:
+    if profundidade_reflexao >= 3 and profundidade_refracao >= 3:
         return [0, 0, 0]
 
     Ia = np.array([51, 51, 51])  # Intensidade da luz ambiente
@@ -192,31 +211,31 @@ def phong(
         cor = cor + entidade.k_reflexao * Ir
 
     # # Adicionar refração recursiva
-    # if profundidade_refracao < 3:
-    #     if entidade.indice_refracao != 0:
-    #         refracao_direcao = refract(V, N, n1=1.0, n2=entidade.indice_refracao)
-    #         if refracao_direcao is not None:
-    #             refracao_direcao = refracao_direcao / np.linalg.norm(
-    #                 refracao_direcao
-    #             )  # Normaliza o vetor refratado
-    #             refracao_origem = ponto_intersec
-    #             raio_refratado = Ray(
-    #                 Ponto(refracao_origem.x, refracao_origem.y, refracao_origem.z),
-    #                 Vetor(
-    #                     refracao_direcao[0], refracao_direcao[1], refracao_direcao[2]
-    #                 ),
-    #             )
+    if profundidade_refracao < 3:
+        if entidade.indice_refracao != 0:
+            refracao_direcao = refract(V, N, n_in=1.0, n_out=entidade.indice_refracao)
+            if refracao_direcao is not None:
+                refracao_direcao = refracao_direcao / np.linalg.norm(
+                    refracao_direcao
+                )  # Normaliza o vetor refratado
+                refracao_origem = ponto_intersec
+                raio_refratado = Ray(
+                    Ponto(refracao_origem.x, refracao_origem.y, refracao_origem.z),
+                    Vetor(
+                        refracao_direcao[0], refracao_direcao[1], refracao_direcao[2]
+                    ),
+                )
 
-    #             cor_refratada = find_closest_intersection(
-    #                 raio_refratado,
-    #                 entidades,
-    #                 profundidade_refracao=profundidade_refracao + 1,
-    #                 profundidade_reflexao=profundidade_reflexao,
-    #             )
+                cor_refratada = find_closest_intersection(
+                    raio_refratado,
+                    entidades,
+                    profundidade_refracao=profundidade_refracao + 1,
+                    profundidade_reflexao=profundidade_reflexao,
+                )
 
-    #             It = np.array(cor_refratada)
+                It = np.array(cor_refratada)
 
-    #             cor = cor + entidade.k_refracao * It
+                cor = cor + entidade.k_refracao * It
 
     cor_final = [min(255, max(0, int(i))) for i in cor]
 
