@@ -109,7 +109,7 @@ def phong(
         Uma lista representando a cor RGB resultante no ponto de interseção.
     """
 
-    if profundidade_reflexao >= 3 and profundidade_refracao >= 3:
+    if profundidade_reflexao > 3 and profundidade_refracao > 3:
         return [0, 0, 0]
 
     Ia = np.array([51, 51, 51])  # Intensidade da luz ambiente
@@ -170,7 +170,8 @@ def phong(
 
     # Adicionar reflexão recursiva
     if profundidade_reflexao < 3:
-        refletido_direcao = 2 * N * (N.dot(V)) - V
+        N_dot_V = clamp(0, N.dot(V), 1)
+        refletido_direcao = 2 * N * (N_dot_V) - V
         refletido_direcao = refletido_direcao / np.linalg.norm(
             refletido_direcao
         )  # Normaliza o vetor refletido
@@ -191,29 +192,31 @@ def phong(
         cor = cor + entidade.k_reflexao * Ir
 
     # # Adicionar refração recursiva
-    if profundidade_refracao < 3:
-        if entidade.indice_refracao != 0:
-            refracao_direcao = refract(V, N, n1=0, n2=entidade.indice_refracao)
-            if refracao_direcao is not None:
-                refracao_direcao = refracao_direcao / np.linalg.norm(
-                    refracao_direcao
-                )  # Normaliza o vetor refratado
-                refracao_origem = ponto_intersec
-                raio_refratado = Ray(
-                    Ponto(refracao_origem.x, refracao_origem.y, refracao_origem.z),
-                    Vetor(
-                        refracao_direcao[0], refracao_direcao[1], refracao_direcao[2]
-                    ),
-                )
+    # if profundidade_refracao < 3:
+    #     if entidade.indice_refracao != 0:
+    #         refracao_direcao = refract(V, N, n1=1.0, n2=entidade.indice_refracao)
+    #         if refracao_direcao is not None:
+    #             refracao_direcao = refracao_direcao / np.linalg.norm(
+    #                 refracao_direcao
+    #             )  # Normaliza o vetor refratado
+    #             refracao_origem = ponto_intersec
+    #             raio_refratado = Ray(
+    #                 Ponto(refracao_origem.x, refracao_origem.y, refracao_origem.z),
+    #                 Vetor(
+    #                     refracao_direcao[0], refracao_direcao[1], refracao_direcao[2]
+    #                 ),
+    #             )
 
-                cor_refratada = find_closest_intersection(
-                    raio_refratado,
-                    entidades,
-                    profundidade_refracao=profundidade_refracao + 1,
-                    profundidade_reflexao=profundidade_reflexao,
-                )
+    #             cor_refratada = find_closest_intersection(
+    #                 raio_refratado,
+    #                 entidades,
+    #                 profundidade_refracao=profundidade_refracao + 1,
+    #                 profundidade_reflexao=profundidade_reflexao,
+    #             )
 
-                cor = cor + entidade.k_refracao * np.array(cor_refratada)
+    #             It = np.array(cor_refratada)
+
+    #             cor = cor + entidade.k_refracao * It
 
     cor_final = [min(255, max(0, int(i))) for i in cor]
 

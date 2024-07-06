@@ -47,7 +47,7 @@ def main():
         k_especular=0.1,
         n_rugosidade=1.0,
         k_reflexao=0.5,
-        k_refracao=0.9,
+        k_refracao=0.0,
         indice_refracao=0.1,
     )
 
@@ -64,9 +64,9 @@ def main():
         indice_refracao=0.3,
     )
 
-    esfera_monitor3 = Esfera(
+    esfera_azul = Esfera(
         center=Ponto(0, -3, 0),
-        radius=2,
+        radius=1,
         color=(0, 0, 1),
         k_difuso=0.8,
         k_ambiental=0.1,
@@ -101,7 +101,7 @@ def main():
     #     color=(255, 0, 0),
     # )
 
-    entidades = [esfera_vermelha, esfera_verde]
+    entidades = [esfera_vermelha, esfera_verde, esfera_azul]
 
     ray_casting.__generate_image__(entidades, 1, camera)
 
