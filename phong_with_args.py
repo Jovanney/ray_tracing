@@ -113,9 +113,9 @@ def phong(entidade, luzes, ponto_intersec, camera_position, entidades, profundid
     elif isinstance(entidade, Mesh):
         N = np.array(
             [
-                entidade.normal_to_intersection_point.x,
-                entidade.normal_to_intersection_point.y,
-                entidade.normal_to_intersection_point.z,
+                ponto_intersec.x,
+                ponto_intersec.y,
+                ponto_intersec.z,
             ]
         )
     if N is not None and np.linalg.norm(N) != 0:

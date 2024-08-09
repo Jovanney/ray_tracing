@@ -1,10 +1,12 @@
 """Main File"""
 
+import math
 import numpy as np
 from vectors import Ponto, Vetor
 from entidades import Mesh, Esfera, Plane
 from camera import Camera
 from ray_casting import RayCasting
+from toro import Toro
 
 
 def main():
@@ -32,37 +34,6 @@ def main():
     v8 = p4 - p3
     normal4 = v7.__cross__(v8).__normalize__()
 
-    # caso com uma esfera opaca, esfera metálica e 1/2 fonte de luz
-
-    # luzes
-    # Luz(2, 1, 0, [153, 153, 153]),
-    # Luz(-2, 1, 0, [153, 153, 153]),
-
-    # esfera_opaca = Esfera(
-    #     center=Ponto(0, -1, 3),
-    #     radius=1,
-    #     color=(1, 0, 0),
-    #     k_difuso=0.8,
-    #     k_ambiental=0.1,
-    #     k_especular=0.1,
-    #     n_rugosidade=1.0,
-    # )
-
-    # esfera_metalica = Esfera(
-    #     center=Ponto(0, -1, 3),
-    #     radius=1,
-    #     color=(1, 0, 0),
-    #     k_difuso=0.8,  # Lower diffuse reflection
-    #     k_especular=0.9,  # High specular reflection
-    #     k_ambiental=0.3,  # Ambient reflection usually remains low
-    #     n_rugosidade=10,  # Higher roughness for sharper specular highlights
-    # )
-
-    # camera = Camera(
-    #     target=Ponto(0, -1, 3),
-    #     position=Ponto(0, -1, -1),
-    #     up=Vetor(0, 1, 0),
-    # )
 
     esfera_metalica = Esfera(
         center=Ponto(0, -1, 3),
@@ -105,9 +76,9 @@ def main():
     )
 
     camera = Camera(
-        target=Ponto(0, 0, 1),
-        position=Ponto(0, 10, 10),
-        up=Vetor(0, 1, 0),
+        target=Ponto(1, 0, 0),
+        position=Ponto(-2, 2, 1),
+        up=Vetor(0, 0, 1),
     )	    
 
     plano = Plane(
@@ -214,13 +185,9 @@ def main():
         n_rugosidade=2.0,
     )
 
-    # plano = Plane(
-    #     point=Ponto(0, 0, 0),
-    #     normal=Vetor(0, 1, 0),
-    #     color=(255, 0, 0),
-    # )
-
-    entidades = [esfera_monitor, esfera_monitor2, esfera_monitor3]
+    toro = Toro(centro_y = 0, centro_z = 0, R=0.5, r=0.2, cor = (1, 0, 0))
+    malha_toro = toro.triangularizar(0.5)
+    entidades = [malha_toro]
 
     ray_casting.__generate_image__(entidades, 1, camera)
 
