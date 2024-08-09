@@ -2,6 +2,7 @@
 
 # import cv2 as cv
 # import numpy as np
+from entidades import Plane
 from vectors import Ponto, Vetor
 from phong_with_args import phong
 from fonte_de_luz import Luz
@@ -58,7 +59,14 @@ class Camera:
         color = [0, 0, 0]
 
         for target in targets:
-            intersection = target.__intersect_line__(ray.origin, ray.direction)
+            if isinstance(target, Plane):
+                [intersection, intersection_color] = target.__intersect_line__(
+                    ray.origin, ray.direction
+                )
+            else:
+                intersection = target.__intersect_line__(ray.origin, ray.direction)
+                intersection_color = target.color
+
             if intersection:
                 distance_vetor = Vetor(
                     intersection[0], intersection[1], intersection[2]
@@ -67,14 +75,16 @@ class Camera:
                 distance = ray.origin.__distance__(distance_vetor)
                 if distance < smallest_distance:
                     smallest_distance = distance
-                    color = phong(
-                        target,
-                        [
-                            Luz(0, 5, 5, [255, 255, 255]),
-                        ],
-                        Ponto(intersection[0], intersection[1], intersection[2]),
-                        self.position,
-                        targets,
-                    )
+                    color = intersection_color
+                    # phong(
+                    #     target,
+                    #     [
+                    #         Luz(2, 1, 0, [153, 153, 153]),
+                    #         Luz(-2, 1, 0, [153, 153, 153]),
+                    #     ],
+                    #     Ponto(intersection[0], intersection[1], intersection[2]),
+                    #     self.position,
+                    #     targets,
+                    # )
 
         return color

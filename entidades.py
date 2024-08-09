@@ -1,5 +1,6 @@
 """Module containing the classes that represent the entities in the 3D space"""
 
+from PIL import Image
 from vectors import Ponto
 
 
@@ -70,6 +71,7 @@ class Plane:
         point,
         normal,
         color,
+        texture_image_path=None,
         k_difuso=0.0,
         k_especular=0.0,
         k_ambiental=0.0,
@@ -89,6 +91,12 @@ class Plane:
         self.indice_refracao = indice_refracao
         self.n_rugosidade = n_rugosidade
 
+        if texture_image_path:
+            self.texture = Image.open(texture_image_path)
+            self.texture_width, self.texture_height = self.texture.size
+        else:
+            self.texture = None
+
     def __intersect_line__(self, line_point, line_vector):
         """Calculate the Intersection Point of a Plane and a Line"""
         d = tuple(p - lp for p, lp in zip(self.point, line_point))
@@ -96,7 +104,36 @@ class Plane:
         if denominator == 0:
             return None
         t = sum(n * dp for n, dp in zip(self.normal, d)) / denominator
-        return tuple(lp + t * lv for lp, lv in zip(line_point, line_vector))
+        intersection = tuple(lp + t * lv for lp, lv in zip(line_point, line_vector))
+
+        if self.texture:
+            u, v = self.get_uv(intersection)
+            color = self.get_texture_color(u, v)
+        else:
+            color = self.color
+
+        return intersection, color
+
+    def get_uv(self, intersection):
+        """Convert the intersection point to 2D texture coordinates (u, v)"""
+        u = intersection[0] % 1.0
+        v = intersection[1] % 1.0
+        return u, v
+
+    def get_texture_color(self, u, v):
+        """Get the color from the texture based on the (u, v) coordinates"""
+        pixel_x = int(u * self.texture_width)
+        pixel_y = int(v * self.texture_height)
+        return self.texture.getpixel((pixel_x, pixel_y))
+
+    # def __intersect_line__(self, line_point, line_vector):
+    #     """Calculate the Intersection Point of a Plane and a Line"""
+    #     d = tuple(p - lp for p, lp in zip(self.point, line_point))
+    #     denominator = sum(n * lv for n, lv in zip(self.normal, line_vector))
+    #     if denominator == 0:
+    #         return None
+    #     t = sum(n * dp for n, dp in zip(self.normal, d)) / denominator
+    #     return tuple(lp + t * lv for lp, lv in zip(line_point, line_vector))
 
 
 class Mesh:

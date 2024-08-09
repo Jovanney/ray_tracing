@@ -11,11 +11,11 @@ from ray_casting import RayCasting
 def main():
     """Main Function"""
 
-    p0 = Ponto(100, 0, 0)
-    p1 = Ponto(0, 100, 0)
-    p2 = Ponto(-100, 0, 0)
-    p3 = Ponto(0, -100, 0)
-    p4 = Ponto(0, 0, 100)
+    p0 = Ponto(10, 0, 0)
+    p1 = Ponto(0, 10, 0)
+    p2 = Ponto(-10, 0, 0)
+    p3 = Ponto(0, -10, 0)
+    p4 = Ponto(0, 0, 10)
 
     v1 = p1 - p0
     v2 = p4 - p0
@@ -32,25 +32,6 @@ def main():
     v7 = p0 - p3
     v8 = p4 - p3
     normal4 = v7.__cross__(v8).__normalize__()
-
-    camera = Camera(
-        target=Ponto(2, 0, 0),
-        position=Ponto(3, 1, 8),
-        up=Vetor(0, 1, 0),
-    )
-
-    esfera_vermelha = Esfera(
-        center=Ponto(3, 0, 0),
-        radius=1,
-        color=(1, 0, 0),
-        k_difuso=0.8,
-        k_ambiental=0.1,
-        k_especular=0.1,
-        n_rugosidade=1.0,
-        k_reflexao=0.5,
-        k_refracao=0.5,
-        indice_refracao=1.5,
-    )
 
     esfera_vermelha2 = Esfera(
         center=Ponto(3, 0, -5),
@@ -91,23 +72,10 @@ def main():
         indice_refracao=0.3,
     )
 
-    esfera_azul = Esfera(
-        center=Ponto(0, -3, 0),
-        radius=1,
-        color=(0, 0, 1),
-        k_difuso=0.8,
-        k_ambiental=0.1,
-        k_especular=0.6,
-        n_rugosidade=1.0,
-        k_reflexao=0.7,
-        k_refracao=0.3,
-        indice_refracao=1.0,
-    )
-
     esfera_rosa = Esfera(
-        center=Ponto(0, -3, -20),
-        radius=4,
-        color=(1, 0, 1),
+        center=Ponto(0, 3, 5),
+        radius=1,
+        color=(255, 0, 255),
         k_difuso=0.8,
         k_ambiental=0.1,
         k_especular=0.6,
@@ -115,6 +83,19 @@ def main():
         k_reflexao=0.0,
         k_refracao=0.0,
         indice_refracao=0.0,
+    )
+
+    esfera_azul = Esfera(
+        center=Ponto(1, 3, 5),
+        radius=1,
+        color=(0, 0, 255),
+        k_difuso=0.8,
+        k_ambiental=0.1,
+        k_especular=0.6,
+        n_rugosidade=1.0,
+        k_reflexao=0.7,
+        k_refracao=0.3,
+        indice_refracao=1.0,
     )
 
     esfera_rosa_2 = Esfera(
@@ -132,9 +113,22 @@ def main():
 
     ray_casting = RayCasting(hres=500, vres=500)
 
+    esfera_vermelha = Esfera(
+        center=Ponto(3, 0, 0),
+        radius=1,
+        color=(1, 0, 0),
+        k_difuso=0.8,
+        k_ambiental=0.1,
+        k_especular=0.1,
+        n_rugosidade=1.0,
+        k_reflexao=1.0,
+        k_refracao=0.9,
+        indice_refracao=1.5,
+    )
+
     mesh = Mesh(
         triangle_quantity=1,
-        vertices_quantity=5,
+        vertices_quantity=3,
         vertices=[p0, p1, p4],
         triangle_normals=[normal1, normal2, normal3, normal4],
         color=(0, 0, 1),
@@ -149,24 +143,54 @@ def main():
         indice_refracao=1.0,
     )
 
-    plano = Plane(
-        point=Ponto(0, 0, 0),
-        normal=Vetor(0, 1, 0),
-        color=(1, 1, 0),
-        k_difuso=0.7,
-        k_especular=0.7,
-        k_ambiental=0.1,
-        k_reflexao=1.0,
-        k_refracao=0.0,
-        n_rugosidade=2.0,
-        indice_refracao=1.0,
+    camera = Camera(
+        target=Ponto(0, 3, 5),
+        position=Ponto(0, -1, 10),
+        up=Vetor(0, 1, 0),
     )
 
-    entidades = [esfera_vermelha, esfera_azul, esfera_verde, esfera_vermelha2]
+    plano = Plane(
+        point=Ponto(0, -1, 3),
+        normal=Vetor(0, 0, -1),
+        color=(255, 255, 0),
+        k_difuso=0.8,
+        k_ambiental=0.1,
+        k_especular=0.1,
+        n_rugosidade=1.0,
+        k_reflexao=1.0,
+        indice_refracao=10,
+        k_refracao=1.0,
+        texture_image_path="minecraft.webp",
+    )
+
+    plano_2 = Plane(
+        point=Ponto(0, -1, 3),
+        normal=Vetor(0, 0, -1),
+        color=(255, 255, 0),
+        k_difuso=0.8,
+        k_ambiental=0.1,
+        k_especular=0.1,
+        n_rugosidade=1.0,
+        k_reflexao=1.0,
+        indice_refracao=10,
+        k_refracao=1.0,
+        texture_image_path="minecraft.webp",
+    )
+
+    esfera_metalica = Esfera(
+        center=Ponto(0, -1, 3),
+        radius=1,
+        color=(1, 0, 0),
+        k_difuso=0.8,  # Lower diffuse reflection
+        k_especular=0.9,  # High specular reflection
+        k_ambiental=0.3,  # Ambient reflection usually remains low
+        n_rugosidade=50,
+        k_reflexao=1.0,
+        # Higher roughness for sharper specular highlights
+    )
+    entidades = [plano, esfera_rosa, esfera_azul]
 
     ray_casting.__generate_image__(entidades, 1, camera)
-
-    # result = refract(np.array([0.707107, -0.707107]), np.array([0, 1]), 9, 10)
 
 
 main()
