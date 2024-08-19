@@ -126,15 +126,6 @@ class Plane:
         pixel_y = int(v * self.texture_height)
         return self.texture.getpixel((pixel_x, pixel_y))
 
-    # def __intersect_line__(self, line_point, line_vector):
-    #     """Calculate the Intersection Point of a Plane and a Line"""
-    #     d = tuple(p - lp for p, lp in zip(self.point, line_point))
-    #     denominator = sum(n * lv for n, lv in zip(self.normal, line_vector))
-    #     if denominator == 0:
-    #         return None
-    #     t = sum(n * dp for n, dp in zip(self.normal, d)) / denominator
-    #     return tuple(lp + t * lv for lp, lv in zip(line_point, line_vector))
-
 
 class Mesh:
     """Class Representing a Mesh in 3D Space"""

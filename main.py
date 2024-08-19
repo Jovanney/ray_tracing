@@ -33,49 +33,10 @@ def main():
     v8 = p4 - p3
     normal4 = v7.__cross__(v8).__normalize__()
 
-    esfera_vermelha2 = Esfera(
-        center=Ponto(3, 0, -5),
-        radius=3,
-        color=(1, 1, 0),
-        k_difuso=0.8,
-        k_ambiental=0.1,
-        k_especular=0.1,
-        n_rugosidade=1.0,
-        k_reflexao=0.5,
-        k_refracao=1.0,
-        indice_refracao=0.0,
-    )
-
-    esfera_verde = Esfera(
-        center=Ponto(0, 0, 0),
+    esfera_vermelha = Esfera(
+        center=Ponto(1, 3, 5),
         radius=1,
-        color=(0, 1, 0),
-        k_difuso=0.8,
-        k_ambiental=0.1,
-        k_especular=0.6,
-        n_rugosidade=1.0,
-        k_reflexao=0.5,
-        k_refracao=1.0,
-        indice_refracao=0.3,
-    )
-
-    esfera_azul_nao = Esfera(
-        center=Ponto(3, 0, -6),
-        radius=2,
-        color=(1, 1, 0),
-        k_difuso=0.8,
-        k_ambiental=0.1,
-        k_especular=0.6,
-        n_rugosidade=1.0,
-        k_reflexao=0.5,
-        k_refracao=1.0,
-        indice_refracao=0.3,
-    )
-
-    esfera_rosa = Esfera(
-        center=Ponto(0, 3, 5),
-        radius=1,
-        color=(255, 0, 255),
+        color=(255, 0, 0),
         k_difuso=0.8,
         k_ambiental=0.1,
         k_especular=0.6,
@@ -86,7 +47,7 @@ def main():
     )
 
     esfera_azul = Esfera(
-        center=Ponto(1, 3, 5),
+        center=Ponto(2, 3, 5),
         radius=1,
         color=(0, 0, 255),
         k_difuso=0.8,
@@ -98,33 +59,20 @@ def main():
         indice_refracao=1.0,
     )
 
-    esfera_rosa_2 = Esfera(
-        center=Ponto(3, -3, -20),
-        radius=4,
-        color=(1, 1, 0),
+    esfera_roxa = Esfera(
+        center=Ponto(1, 8, 5),
+        radius=0.6,
+        color=(153, 51, 153),
         k_difuso=0.8,
         k_ambiental=0.1,
         k_especular=0.6,
         n_rugosidade=1.0,
         k_reflexao=0.7,
-        k_refracao=0.9,
-        indice_refracao=0.0,
+        k_refracao=0.3,
+        indice_refracao=1.0,
     )
 
     ray_casting = RayCasting(hres=500, vres=500)
-
-    esfera_vermelha = Esfera(
-        center=Ponto(3, 0, 0),
-        radius=1,
-        color=(1, 0, 0),
-        k_difuso=0.8,
-        k_ambiental=0.1,
-        k_especular=0.1,
-        n_rugosidade=1.0,
-        k_reflexao=1.0,
-        k_refracao=0.9,
-        indice_refracao=1.5,
-    )
 
     mesh = Mesh(
         triangle_quantity=1,
@@ -164,7 +112,7 @@ def main():
     )
 
     plano_2 = Plane(
-        point=Ponto(0, -1, 3),
+        point=Ponto(0, 1, 3),
         normal=Vetor(0, 0, -1),
         color=(255, 255, 0),
         k_difuso=0.8,
@@ -174,21 +122,10 @@ def main():
         k_reflexao=1.0,
         indice_refracao=10,
         k_refracao=1.0,
-        texture_image_path="minecraft.webp",
+        # texture_image_path="minecraft.webp",
     )
 
-    esfera_metalica = Esfera(
-        center=Ponto(0, -1, 3),
-        radius=1,
-        color=(1, 0, 0),
-        k_difuso=0.8,  # Lower diffuse reflection
-        k_especular=0.9,  # High specular reflection
-        k_ambiental=0.3,  # Ambient reflection usually remains low
-        n_rugosidade=50,
-        k_reflexao=1.0,
-        # Higher roughness for sharper specular highlights
-    )
-    entidades = [plano, esfera_rosa, esfera_azul]
+    entidades = [plano, esfera_vermelha, esfera_azul, esfera_roxa]
 
     ray_casting.__generate_image__(entidades, 1, camera)
 
