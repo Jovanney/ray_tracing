@@ -1,6 +1,7 @@
 """Main File"""
 
 import numpy as np
+from bsp import build_bsp
 from vectors import Ponto, Vetor
 from entidades import Mesh, Esfera, Plane
 from camera import Camera
@@ -10,178 +11,117 @@ from ray_casting import RayCasting
 def main():
     """Main Function"""
 
-    p0 = Ponto(100, 0, 0)
-    p1 = Ponto(0, 100, 0)
-    p2 = Ponto(-100, 0, 0)
-    p3 = Ponto(0, -100, 0)
-    p4 = Ponto(0, 0, 100)
+    # Define vertices of the triangle
+    p0 = Ponto(0, 0, 0)
+    p1 = Ponto(2, 0, 0)
+    p2 = Ponto(1, 0, 2)
 
+    # Calculate normal for the triangle
     v1 = p1 - p0
-    v2 = p4 - p0
-    normal1 = v1.__cross__(v2).__normalize__()
+    v2 = p2 - p0
+    normal = v1.__cross__(v2).__normalize__()
 
-    v3 = p2 - p1
-    v4 = p4 - p1
+    # Define vertices of the second triangle (behind the first triangle)
+    p3 = Ponto(-1, -2, 0)
+    p4 = Ponto(3, -2, 0)
+    p5 = Ponto(1, -2, 3)
+
+    # Calculate normal for the second triangle
+    v3 = p4 - p3
+    v4 = p5 - p3
     normal2 = v3.__cross__(v4).__normalize__()
 
-    v5 = p3 - p2
-    v6 = p4 - p2
-    normal3 = v5.__cross__(v6).__normalize__()
-
-    v7 = p0 - p3
-    v8 = p4 - p3
-    normal4 = v7.__cross__(v8).__normalize__()
-
-    # caso com uma esfera opaca, esfera metálica e 1/2 fonte de luz
-
-    # luzes
-    # Luz(2, 1, 0, [153, 153, 153]),
-    # Luz(-2, 1, 0, [153, 153, 153]),
-
-    # esfera_opaca = Esfera(
-    #     center=Ponto(0, -1, 3),
-    #     radius=1,
-    #     color=(1, 0, 0),
-    #     k_difuso=0.8,
-    #     k_ambiental=0.1,
-    #     k_especular=0.1,
-    #     n_rugosidade=1.0,
-    # )
-
-    # esfera_metalica = Esfera(
-    #     center=Ponto(0, -1, 3),
-    #     radius=1,
-    #     color=(1, 0, 0),
-    #     k_difuso=0.8,  # Lower diffuse reflection
-    #     k_especular=0.9,  # High specular reflection
-    #     k_ambiental=0.3,  # Ambient reflection usually remains low
-    #     n_rugosidade=10,  # Higher roughness for sharper specular highlights
-    # )
-
-    # camera = Camera(
-    #     target=Ponto(0, -1, 3),
-    #     position=Ponto(0, -1, -1),
-    #     up=Vetor(0, 1, 0),
-    # )
-
+    # Define spheres
     esfera_metalica = Esfera(
         center=Ponto(0, -1, 3),
         radius=1,
-        color=(1, 0, 0),
-        k_difuso=0.8,  # Lower diffuse reflection
-        k_especular=0.9,  # High specular reflection
-        k_ambiental=0.3,  # Ambient reflection usually remains low
-        n_rugosidade=50,  # Higher roughness for sharper specular highlights
+        color=(255, 0, 0),
     )
 
     esfera_opaca = Esfera(
         center=Ponto(2, -1, 3),
         radius=1,
-        color=(0, 0, 1),
-        k_difuso=0.8,
-        k_ambiental=0.1,
-        k_especular=0.1,
-        n_rugosidade=1.0,
+        color=(0, 0, 255),
     )
 
     esfera_3 = Esfera(
         center=Ponto(-2, -1, 3),
         radius=1,
-        color=(0, 1, 0),
-        k_difuso=0.8,
-        k_ambiental=0.1,
-        k_especular=0.1,
-        n_rugosidade=10,
+        color=(0, 255, 0),
     )
 
     esfera_exemplo_2 = Esfera(
         center=Ponto(0.2, 1, 3),
         radius=0.7,
         color=(0, 255, 0),
-        k_difuso=1,
-        k_especular=0.1,
-        k_ambiental=0.2,
-        n_rugosidade=10,
     )
 
+    # Define camera
     camera = Camera(
-        target=Ponto(0, -1, 3),
-        position=Ponto(0, -1, -5),
-        up=Vetor(0, 1, 0),
+        target=Ponto(1, -1, 1),
+        position=Ponto(1, 5, 1),
+        up=Vetor(0, 0, 1),
     )
 
+    # Define planes
     plano = Plane(
         point=Ponto(0, -1, 3),
         normal=Vetor(0, 0, -1),
-        color=(1, 1, 0),
-        k_difuso=0.8,
-        k_ambiental=0.1,
-        k_especular=0.1,
-        n_rugosidade=1.0,
+        color=(255, 255, 0),
     )
 
-    # Opaque Sphere
-    esfera2 = Esfera(
-        center=Ponto(0.2, 1, 3),
-        radius=0.7,
-        color=(0, 255, 0),
-        k_difuso=1,
-        k_especular=0.1,
-        k_ambiental=0.2,
-        n_rugosidade=10,
+    plano_atras = Plane(
+        point=Ponto(0, -1, 5),  # Behind the existing plane
+        normal=Vetor(0, 0, -1),
+        color=(255, 0, 255),
     )
 
-    # Metallic Sphere
-    esfera1 = Esfera(
-        center=Ponto(2, 0, 1),
-        radius=0.7,
-        color=(255, 0, 0),  # Metallic surfaces can still have color
-        k_difuso=0.2,  # Lower diffuse reflection
-        k_especular=0.9,  # High specular reflection
-        k_ambiental=0.1,  # Ambient reflection usually remains low
-        k_reflexao=0.0,
-        k_transmissao=0.0,
-        n_rugosidade=100,  # Higher roughness for sharper specular highlights
+    plano_frente = Plane(
+        point=Ponto(0, -1, 1),  # In front of the existing plane
+        normal=Vetor(0, 0, -1),
+        color=(0, 255, 255),
     )
 
-    esfera3 = Esfera(
-        center=Ponto(4, 1, 3),
-        radius=0.7,
-        color=(0, 0, 255),
-        k_difuso=0.7,
-        k_especular=0.0,
-        k_ambiental=0.0,
-        k_reflexao=0.0,
-        k_transmissao=0.0,
-        n_rugosidade=1.0,
+    plano_meio = Plane(
+        point=Ponto(0, -1, 3),  # Intersecting the existing plane
+        normal=Vetor(1, 0, 0),  # Different normal to ensure intersection
+        color=(255, 255, 255),
     )
 
+    # Build BSP tree
+    # bsp_tree = build_bsp([plano, plano_atras, plano_frente, plano_meio])
+
+    # print(bsp_tree)
+
+    # Define ray casting
     ray_casting = RayCasting(hres=500, vres=500)
 
-    mesh = Mesh(
+    # Define triangle mesh
+    triangle = Mesh(
         triangle_quantity=1,
-        vertices_quantity=5,
-        vertices=[p0, p1, p4],
-        triangle_normals=[normal1, normal2, normal3, normal4],
+        vertices_quantity=3,
+        vertices=[p0, p1, p2],
+        triangle_normals=[normal],
         color=(0, 0, 255),
         triangle_tuple_vertices=[(0, 1, 2)],
         vertex_normals=[],
-        k_difuso=0.7,
-        k_especular=0.7,
-        k_ambiental=0.1,
-        k_reflexao=0.0,
-        k_transmissao=0.0,
-        n_rugosidade=2.0,
     )
 
-    # plano = Plane(
-    #     point=Ponto(0, 0, 0),
-    #     normal=Vetor(0, 1, 0),
-    #     color=(255, 0, 0),
-    # )
+    triangle2 = Mesh(
+        triangle_quantity=1,
+        vertices_quantity=3,
+        vertices=[p3, p4, p5],
+        triangle_normals=[normal2],
+        color=(255, 0, 0),
+        triangle_tuple_vertices=[(0, 1, 2)],
+        vertex_normals=[],
+    )
 
-    entidades = [esfera_metalica, esfera_opaca, esfera_3]
+    # bsp_tree = build_bsp([triangle])
+    # Add entities
+    entidades = [triangle, triangle2]
 
+    # Generate image
     ray_casting.__generate_image__(entidades, 1, camera)
 
 
