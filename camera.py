@@ -111,18 +111,6 @@ class Camera:
                 distance = ray.origin.__distance__(distance_vetor)
                 if distance < smallest_distance:
                     smallest_distance = distance
-                    color = phong(
-                        target,
-                        [
-                            # Luz(2, 1, 1, [255, 255, 255]),
-                            # Luz(3, 1, 1, [255, 255, 255]),
-                            # Luz(100, 0, 10, [255, 255, 255]),
-                            # Luz(2, 102, 2, [255, 255, 255]),
-                            Luz(2, 1, 0, [153, 153, 153]),
-                            Luz(-2, 1, 0, [153, 153, 153]),
-                        ],
-                        Ponto(intersection[0], intersection[1], intersection[2]),
-                        self.position,
-                    )
+                    color = target.color
 
         return color
