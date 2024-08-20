@@ -107,12 +107,6 @@ class Mesh:
         triangle_normals: list,
         vertex_normals: list,
         color,
-        k_difuso=0.0,
-        k_especular=0.0,
-        k_ambiental=0.0,
-        k_reflexao=0.0,
-        k_transmissao=0.0,
-        n_rugosidade=0.0,
     ):
         self.triangle_quantity = triangle_quantity
         self.vertices_quantity = vertices_quantity
@@ -121,12 +115,6 @@ class Mesh:
         self.triangle_normals = triangle_normals
         self.vertex_normals = vertex_normals
         self.normal_to_intersection_point = None
-        self.k_difuso = k_difuso
-        self.k_especular = k_especular
-        self.k_ambiental = k_ambiental
-        self.k_reflexao = k_reflexao
-        self.k_transmissao = k_transmissao
-        self.n_rugosidade = n_rugosidade
 
         self.color = color
 
