@@ -1,3 +1,4 @@
+from camera import Camera, Ray
 from entidades import Mesh
 import numpy as np
 
@@ -147,9 +148,7 @@ def build_bsp(objects):
             front_list.append(obj)
         elif is_behind_triangle(obj, partition):
             back_list.append(obj)
-        elif is_intersecting_triangle(
-            obj, partition
-        ):  # Verifica se o triângulo está intersectando
+        elif is_intersecting_triangle(obj, partition):
             front_split, back_split = split_triangle(obj, partition)
             if front_split:
                 front_list.append(front_split)
@@ -197,3 +196,36 @@ def print_bsp_tree(node, depth=0):
         print_bsp_tree(node.back, depth + 1)
     else:
         print(f"{indent}Back: None")
+
+
+def render_bsp_tree(node, camera: Camera, ray: Ray):
+    if node is None:
+        return None
+
+    # Determine which side of the plane the camera is on
+    camera_position_relative_to_plane = node.plane.__distance__(camera.position)
+    ray_origin_relative_to_plane = node.plane.__distance__(ray.origin)
+
+    # Se a câmera está do mesmo lado do raio
+    if camera_position_relative_to_plane > 0:
+        # Renderize primeiro o lado de trás
+        render_bsp_tree(node.back, camera, ray)
+        # Em seguida, o plano (o triângulo atual)
+        if node.mesh:
+            color = node.mesh.__intersect__(ray.origin, ray.direction)
+            if color:
+                return color
+        # Por último, renderize o lado da frente
+        render_bsp_tree(node.front, camera, ray)
+    else:
+        # Renderize primeiro o lado da frente
+        render_bsp_tree(node.front, camera, ray)
+        # Em seguida, o plano (o triângulo atual)
+        if node.mesh:
+            color = node.mesh.__intersect__(ray.origin, ray.direction)
+            if color:
+                return color
+        # Por último, renderize o lado de trás
+        render_bsp_tree(node.back, camera, ray)
+
+    return None
