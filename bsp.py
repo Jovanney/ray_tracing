@@ -36,6 +36,24 @@ def is_behind_triangle(triangle, partition_plane):
     )
 
 
+def is_intersecting_triangle(triangle, partition_plane):
+    # Verifica se o triângulo está intersectando o plano
+    front = False
+    back = False
+
+    for vertex in triangle.vertices:
+        distance = np.dot(
+            (vertex - partition_plane.vertices[triangle.vertices.index(vertex)]),
+            partition_plane.triangle_normals[0],
+        )
+        if distance > 0:
+            front = True
+        elif distance < 0:
+            back = True
+
+    return front and back
+
+
 def split_triangle(triangle, partition_plane):
     front_vertices = []
     back_vertices = []
@@ -122,33 +140,34 @@ def build_bsp(objects):
     partition = objects[0]  # Select a polygon P from the list.
     front_list = []
     back_list = []
+    coplanar_list = []
 
     for obj in objects[1:]:
-        if is_in_front_triangle(
-            obj, partition
-        ):  # If that polygon is wholly in front of the plane containing P, move that polygon to the list of nodes in front of P.
+        if is_in_front_triangle(obj, partition):
             front_list.append(obj)
-        elif is_behind_triangle(
-            obj, partition
-        ):  # If that polygon is wholly behind the plane containing P, move that polygon to the list of nodes behind P.
+        elif is_behind_triangle(obj, partition):
             back_list.append(obj)
-        else:  # If that polygon is intersected by the plane containing P, split it into two polygons and move them to the respective lists of polygons behind and in front of P.
+        elif is_intersecting_triangle(
+            obj, partition
+        ):  # Verifica se o triângulo está intersectando
             front_split, back_split = split_triangle(obj, partition)
             if front_split:
                 front_list.append(front_split)
             if back_split:
                 back_list.append(back_split)
+        else:
+            coplanar_list.append(
+                obj
+            )  # Adiciona objetos coplanares à lista de objetos coplanares
 
-    front_node = build_bsp(
-        front_list
-    )  # Apply this algorithm to the list of polygons in front of P.
-    back_node = build_bsp(
-        back_list
-    )  # Apply this algorithm to the list of polygons behind P.
+    coplanar_list.append(partition)
+
+    front_node = build_bsp(front_list)
+    back_node = build_bsp(back_list)
 
     return BSPNode(
-        partition=partition, front=front_node, back=back_node
-    )  # Return a node containing P, the node returned from the first recursive call, and the node returned from the second recursive call.
+        partition=partition, front=front_node, back=back_node, objects=coplanar_list
+    )
 
 
 def print_bsp_tree(node, depth=0):
@@ -156,7 +175,15 @@ def print_bsp_tree(node, depth=0):
         return
 
     indent = "  " * depth
-    print(f"{indent}Partition: color = {node.partition.color}")
+    partition = node.partition
+
+    print(f"{indent}Partition: color = {partition.color}")
+    print(f"{indent}Vertices:")
+    for index, vertex in enumerate(partition.vertices):
+        print(f"{indent} ponto {index + 1} ({vertex.x}, {vertex.y}, {vertex.z})")
+    print(
+        f"{indent}Normal: ({partition.triangle_normals[0].x}, {partition.triangle_normals[0].y}, {partition.triangle_normals[0].z})"
+    )
     print(f"{indent}Objects: {len(node.objects)} objects")
 
     if node.front is not None:
