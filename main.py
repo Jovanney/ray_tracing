@@ -43,7 +43,7 @@ def main():
     # Define camera
     camera = Camera(
         target=Ponto(1, -1, 1),
-        position=Ponto(1, 5, 1),
+        position=Ponto(1, 5, 5),
         up=Vetor(0, 0, 1),
     )
 
@@ -80,7 +80,7 @@ def main():
         vertices_quantity=3,
         vertices=[p6, p7, p8],
         triangle_normals=[normal3],
-        color=(0, 255, 0),
+        color=(255, 255, 255),
         triangle_tuple_vertices=[(0, 1, 2)],
         vertex_normals=[],
     )
@@ -90,8 +90,9 @@ def main():
     root = build_bsp(entidades)
 
     print_bsp_tree(root)
+
     # Generate image
-    # ray_casting.__generate_image__(entidades, 1, camera)
+    ray_casting.__generate_image__(root, camera)
 
 
 main()
