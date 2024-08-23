@@ -58,7 +58,7 @@ class Esfera:
             return tuple(p + t1 * v for p, v in zip(line_point, line_vector))
         if 0 < t2 < t1:
             return tuple(p + t2 * v for p, v in zip(line_point, line_vector))
-
+        
         return None
 
 

@@ -4,6 +4,7 @@ import numpy as np
 from ray import Ray
 from entidades import Esfera, Plane, Mesh
 from vectors import Ponto, Vetor
+from EsferaTexturizada import EsferaTexturizada
 
 
 def clamp(minimum, x, maximum):
@@ -121,9 +122,12 @@ def phong(entidade, luzes, ponto_intersec, camera_position, entidades, profundid
     if N is not None and np.linalg.norm(N) != 0:
         N = N / np.linalg.norm(N)  # Normaliza a normal N
 
-    entidade.color = np.array(entidade.color)
+    if isinstance(entidade, EsferaTexturizada):
+        u, v = entidade.get_uv(ponto_intersec)
+        entidade.color = np.array(entidade.get_color(u, v))
+    else:
+        entidade.color = np.array(entidade.color)
     i_sum = np.array([0.0, 0.0, 0.0])
-
     for luz in luzes:
         luz.I = np.array(luz.I)
         L = np.array(

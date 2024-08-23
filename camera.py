@@ -2,7 +2,6 @@
 
 # import cv2 as cv
 # import numpy as np
-from entidades import Mesh
 from vectors import Ponto, Vetor
 from phong_with_args import phong
 from fonte_de_luz import Luz
@@ -58,7 +57,7 @@ class Camera:
         smallest_distance = float("inf")
         color = [0, 0, 0]
 
-        for target in targets:
+        for target in targets:            
             intersection = target.__intersect_line__(ray.origin, ray.direction)
             if intersection:
                 distance_vetor = Vetor(
@@ -75,8 +74,9 @@ class Camera:
                             # Luz(3, 1, 1, [255, 255, 255]),
                             # Luz(100, 0, 10, [255, 255, 255]),
                             # Luz(2, 102, 2, [255, 255, 255]),
-                            Luz(0, 5, 5, [255, 255, 255]),
-                           
+                            Luz(2, 1, 0, [255, 255, 255]),
+                            Luz(-2, 1, 0, [255, 255, 255]),
+                            Luz(0, -1, -5, [255, 255, 255]),
                         ],
                         Ponto(intersection[0], intersection[1], intersection[2]),
                         self.position,
