@@ -1,7 +1,7 @@
 """Main File"""
 
 import numpy as np
-from bsp import build_bsp, print_bsp_tree
+from bsp import build_bsp, collect_meshes, print_bsp_tree
 from vectors import Ponto, Vetor
 from entidades import Mesh, Plane
 from camera import Camera
@@ -90,9 +90,9 @@ def main():
     root = build_bsp(entidades)
 
     print_bsp_tree(root)
-
+    all_triangles = collect_meshes(root)
     # Generate image
-    ray_casting.__generate_image__(root, camera)
+    ray_casting.__generate_image__(all_triangles, 1, camera)
 
 
 main()

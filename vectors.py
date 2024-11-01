@@ -28,6 +28,19 @@ class Ponto:
         # print("vetor resultante: ", vetor_resultado.__dict__)
         return vetor_resultado
 
+    def __magnitude__(self):
+        return (self.x**2 + self.y**2 + self.z**2) ** 0.5
+
+    def __normalize__(self):
+        if self.__magnitude__() == 0:
+            return Vetor(0, 0, 0)
+
+        return Ponto(
+            self.x / self.__magnitude__(),
+            self.y / self.__magnitude__(),
+            self.z / self.__magnitude__(),
+        )
+
     def __distance__(self, p):
         return ((self.x - p.x) ** 2 + (self.y - p.y) ** 2 + (self.z - p.z) ** 2) ** 0.5
 

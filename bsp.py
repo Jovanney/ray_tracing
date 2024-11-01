@@ -198,34 +198,16 @@ def print_bsp_tree(node, depth=0):
         print(f"{indent}Back: None")
 
 
-def render_bsp_tree(node, camera: Camera, ray: Ray):
-    if node is None:
-        return None
+def collect_meshes(node):
+    meshes = []
 
-    # Determine which side of the plane the camera is on
-    camera_position_relative_to_plane = node.plane.__distance__(camera.position)
-    ray_origin_relative_to_plane = node.plane.__distance__(ray.origin)
+    def traverse(node):
+        if node is None:
+            return
+        if node.objects:
+            meshes.extend(node.objects)
+        traverse(node.front)
+        traverse(node.back)
 
-    # Se a câmera está do mesmo lado do raio
-    if camera_position_relative_to_plane > 0:
-        # Renderize primeiro o lado de trás
-        render_bsp_tree(node.back, camera, ray)
-        # Em seguida, o plano (o triângulo atual)
-        if node.mesh:
-            color = node.mesh.__intersect__(ray.origin, ray.direction)
-            if color:
-                return color
-        # Por último, renderize o lado da frente
-        render_bsp_tree(node.front, camera, ray)
-    else:
-        # Renderize primeiro o lado da frente
-        render_bsp_tree(node.front, camera, ray)
-        # Em seguida, o plano (o triângulo atual)
-        if node.mesh:
-            color = node.mesh.__intersect__(ray.origin, ray.direction)
-            if color:
-                return color
-        # Por último, renderize o lado de trás
-        render_bsp_tree(node.back, camera, ray)
-
-    return None
+    traverse(node)
+    return meshes
